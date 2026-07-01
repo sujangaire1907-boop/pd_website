@@ -158,10 +158,7 @@ if (contactForm) {
       valid = false;
     }
     if (valid) {
-        const apiBase = (window.location.protocol === 'file:'
-          || window.location.hostname === '127.0.0.1'
-          || window.location.hostname === 'localhost'
-          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+        const apiBase = 'https://pd-website-mobq-pi.vercel.app';
 
         const payload = {
           fullName: document.getElementById('fullName').value.trim(),
@@ -208,10 +205,7 @@ if (contactForm) {
 }
 
 function getApiBase() {
-  return (window.location.protocol === 'file:'
-    || window.location.hostname === '127.0.0.1'
-    || window.location.hostname === 'localhost'
-    || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+  return 'https://pd-website-mobq-pi.vercel.app';
 }
 
 function escapeHtml(value) {

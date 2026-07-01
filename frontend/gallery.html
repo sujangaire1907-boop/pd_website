@@ -59,12 +59,7 @@
     if (!grid) return;
 
     const host = window.location.hostname;
-    const apiBase = (window.location.protocol === 'file:'
-      || host === '127.0.0.1'
-      || host === 'localhost'
-      || (window.location.port && window.location.port !== '4000'))
-      ? `http://${host}:4000`
-      : '';
+    const apiBase = 'https://pd-website-mobq-pi.vercel.app';
 
     try {
       const res = await fetch(`${apiBase}/api/galleries`);

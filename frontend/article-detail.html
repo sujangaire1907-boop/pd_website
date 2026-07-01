@@ -46,14 +46,7 @@
 
 <script>
   function getApiBase() {
-    const host = window.location.hostname;
-    if (window.location.protocol === 'file:'
-      || host === '127.0.0.1'
-      || host === 'localhost'
-      || (window.location.port && window.location.port !== '4000')) {
-      return `http://${host}:4000`;
-    }
-    return '';
+    return 'https://pd-website-mobq-pi.vercel.app';
   }
 
   function createTextNode(tag, text, className) {
