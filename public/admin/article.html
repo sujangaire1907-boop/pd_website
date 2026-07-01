@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit AI · Articles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #f2f6fe;
+      min-height: 100vh;
+      color: #0b1a2b;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ----- HEADER / NAVBAR ----- */
+    .navbar {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding: 0 36px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.02);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .nav-brand span {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 8px 18px;
+      border-radius: 40px;
+      text-decoration: none;
+      color: #2c3d52;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      background: rgba(37,99,235,0.06);
+      color: #1a3b6b;
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #2c3d52;
+      cursor: pointer;
+      transition: all 0.15s;
+      backdrop-filter: blur(4px);
+      background: rgba(255,255,255,0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239,68,68,0.06);
+      border-color: #ef4444;
+      color: #dc2626;
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 26px;
+      height: 2.5px;
+      background: #1e2a3a;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+
+    /* ----- MAIN CONTENT ----- */
+    .main-wrap {
+      flex: 1;
+      max-width: 1280px;
+      margin: 24px auto;
+      width: 100%;
+      padding: 0 36px;
+    }
+
+    .content-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px;
+      padding: 32px 36px;
+      box-shadow: 0 30px 60px -20px rgba(0, 20, 50, 0.25), 0 2px 10px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+
+    .page-header p {
+      color: #3b4a5e;
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    /* article form */
+    .article-form {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #2c3d52;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      color: #0b1a2b;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+      background: rgba(255,255,255,0.9);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      min-width: 160px;
+      margin-bottom: 0;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border: none;
+      padding: 12px 32px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 10px 20px -10px rgba(37,99,235,0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 14px 28px -10px rgba(37,99,235,0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 12px 32px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #2c3d52;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,0,0,0.08);
+    }
+
+    /* article list */
+    .article-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .article-card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 24px;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,0.7);
+      transition: transform 0.15s;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .article-card:hover {
+      transform: translateX(4px);
+    }
+
+    .article-card h4 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .article-thumb {
+      width: 120px;
+      height: 84px;
+      object-fit: cover;
+      border-radius: 12px;
+      flex-shrink: 0;
+      background: #eee;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .article-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .article-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid rgba(0,0,0,0.06);
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .icon-btn:hover { box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
+
+    .icon-delete { color: #c02626; }
+
+    .article-excerpt {
+      color: #3b4a5e;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      color: #5a6f88;
+      font-size: 0.8rem;
+      align-items: center;
+    }
+
+    .article-meta .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .article-meta .tag {
+      background: rgba(37,99,235,0.06);
+      color: #2563eb;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .article-status {
+      display: inline-block;
+      padding: 2px 14px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .article-status.draft {
+      background: rgba(107,114,128,0.1);
+      color: #6b7280;
+    }
+
+    .article-status.published {
+      background: rgba(37,99,235,0.08);
+      color: #2563eb;
+    }
+
+    .article-status.archived {
+      background: rgba(107,114,128,0.08);
+      color: #6b7280;
+    }
+
+    .empty-articles {
+      text-align: center;
+      padding: 60px 20px;
+      color: #5a6f88;
+      background: rgba(255,255,255,0.3);
+      border-radius: 28px;
+    }
+
+    /* ----- FOOTER ----- */
+    .footer {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding: 20px 36px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #5a6f88;
+      margin-top: auto;
+    }
+
+    .footer a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 20px;
+        height: 64px;
+        flex-wrap: wrap;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        gap: 4px;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 12px 16px;
+        width: 100%;
+        border-radius: 12px;
+      }
+
+      .main-wrap {
+        padding: 0 16px;
+        margin: 16px auto;
+      }
+
+      .content-card {
+        padding: 20px 16px;
+        border-radius: 32px;
+      }
+
+      .article-form {
+        padding: 18px 16px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .form-row .form-group {
+        min-width: auto;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .article-card {
+        padding: 16px;
+      }
+
+      .footer {
+        padding: 16px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0 12px;
+      }
+      .nav-brand {
+        font-size: 1.1rem;
+      }
+      .btn-logout {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== HEADER / NAVBAR ===== -->
+  <header class="navbar">
+    <a href="dashboard.html" class="nav-brand">Orbit<span>AI</span></a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="galleries.html">Galleries</a></li>
+      <li><a href="event.html">Events</a></li>
+      <li><a href="article.html" class="active">Articles</a></li>
+      <li><a href="users.html">Users</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn-logout" id="logoutBtn">Sign out</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-wrap">
+    <div class="content-card">
+      <div class="page-header">
+        <h1>Articles</h1>
+        <p>Manage blog and article content. Create, edit, and organize your articles below.</p>
+      </div>
+
+      <!-- Article Form -->
+      <form id="articleForm" class="article-form">
+        <div class="form-group">
+          <label for="artTitle">Article Title *</label>
+          <input type="text" id="artTitle" placeholder="e.g., The Future of AI in Business" required />
+        </div>
+
+        <div class="form-group">
+          <label for="artExcerpt">Excerpt / Summary</label>
+          <input type="text" id="artExcerpt" placeholder="A brief summary of the article (optional)" />
+        </div>
+
+        <div class="form-group">
+          <label for="artBody">Article Body *</label>
+          <textarea id="artBody" placeholder="Write your article content here. HTML tags are allowed." rows="6" required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="artTags">Tags</label>
+            <input type="text" id="artTags" placeholder="e.g., AI, Technology, Innovation" />
+          </div>
+          <div class="form-group">
+            <label for="artStatus">Status</label>
+            <select id="artStatus">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="artImage">Feature Image *</label>
+            <input type="file" id="artImage" accept="image/*" required />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" type="submit">Save Article</button>
+          <button class="btn-secondary" type="reset">Clear</button>
+        </div>
+      </form>
+
+      <!-- Article List -->
+      <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:16px;">Your Articles</h3>
+      <div class="article-list" id="articleList">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    &copy; 2025 <a href="#">Orbit AI</a> · All rights reserved · 
+    <a href="#">Privacy</a> · <a href="#">Terms</a>
+  </footer>
+
+  <script>
+    (function() {
+      // ----- Mobile nav toggle -----
+      const toggle = document.getElementById('navToggle');
+      const navLinks = document.getElementById('navLinks');
+
+      if (toggle && navLinks) {
+        toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          navLinks.classList.toggle('open');
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.navbar')) {
+            navLinks.classList.remove('open');
+          }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+          });
+        });
+      }
+
+      // ----- Logout -----
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        window.location.href = 'login.html';
+      });
+
+      // ----- Article functions -----
+      async function renderArticles() {
+        const list = document.getElementById('articleList');
+        list.innerHTML = `<div class="empty-articles">Loading articles…</div>`;
+        try {
+          const apiBase = (window.location.protocol === 'file:'
+            || window.location.hostname === '127.0.0.1'
+            || window.location.hostname === 'localhost'
+            || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+          const res = await fetch(`${apiBase}/api/articles`);
+          if (!res.ok) throw new Error('Failed to fetch articles');
+          const items = await res.json();
+          if (!Array.isArray(items) || items.length === 0) {
+            list.innerHTML = `<div class="empty-articles">No articles yet. Write your first article above!</div>`;
+            return;
+          }
+
+          // Sort by createdAt (newest first)
+          const sorted = [...items].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+          list.innerHTML = sorted.map(article => {
+            const statusClass = (article.status || 'draft').toLowerCase();
+            const statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+            const dateDisplay = article.createdAt ? new Date(article.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Just now';
+            const tags = article.tags ? (Array.isArray(article.tags) ? article.tags : String(article.tags).split(',').map(t => t.trim()).filter(Boolean)) : [];
+            const thumb = (article.images && article.images.length) ? escapeHtml(article.images[0]) : '';
+
+            return `
+              <div class="article-card" data-id="${escapeHtml(article.id)}">
+                <img class="article-thumb" src="${thumb || 'https://via.placeholder.com/240x160?text=No+Image'}" alt="${escapeHtml(article.title)}" />
+                <div class="article-content">
+                  <h4>${escapeHtml(article.title)}</h4>
+                  ${article.summary ? `<div class="article-excerpt">${escapeHtml(article.summary)}</div>` : ''}
+                  <div class="article-meta">
+                    <span>Date: ${dateDisplay}</span>
+                    <span class="article-status ${statusClass}">${statusLabel}</span>
+                    ${tags.length > 0 ? `
+                      <span class="tags">
+                        ${tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+                      </span>
+                    ` : ''}
+                  </div>
+                </div>
+                <div class="article-actions">
+                  <button class="icon-btn icon-edit" data-id="${escapeHtml(article.id)}" title="Edit">Edit</button>
+                  <button class="icon-btn icon-delete" data-id="${escapeHtml(article.id)}" title="Delete">Delete</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+          // attach handlers
+          document.querySelectorAll('.icon-edit').forEach(b => b.addEventListener('click', () => startEdit(b.getAttribute('data-id'))));
+          document.querySelectorAll('.icon-delete').forEach(b => b.addEventListener('click', () => doDelete(b.getAttribute('data-id'))));
+        } catch (err) {
+          console.error('Render articles failed', err);
+          list.innerHTML = `<div class="empty-articles">Unable to load articles.</div>`;
+        }
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(text).replace(/[&<>"']/g, m => map[m]);
+      }
+
+      // ----- Handle article creation / edit -----
+      const form = document.getElementById('articleForm');
+      let editingId = null;
+      let existingImageUrl = null;
+      function showSaving(msg = 'Saving, please wait...') {
+        let o = document.getElementById('savingOverlayArticles');
+        if (!o) {
+          o = document.createElement('div');
+          o.id = 'savingOverlayArticles';
+          o.style.position = 'fixed'; o.style.inset = '0'; o.style.display = 'flex'; o.style.alignItems = 'center'; o.style.justifyContent = 'center'; o.style.background = 'rgba(2,6,23,0.45)'; o.style.zIndex = '9999';
+          o.innerHTML = `<div style="background:white;padding:14px 18px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.3);font-weight:700;color:#0b1a2b">${msg}</div>`;
+          document.body.appendChild(o);
+        } else { o.firstElementChild.textContent = msg; o.style.display = 'flex'; }
+      }
+      function hideSaving() { const o = document.getElementById('savingOverlayArticles'); if (o) o.style.display = 'none'; }
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('artTitle').value.trim();
+        const excerpt = document.getElementById('artExcerpt').value.trim();
+        const body = document.getElementById('artBody').value.trim();
+        const tags = document.getElementById('artTags').value.trim();
+        const status = document.getElementById('artStatus').value;
+
+        if (!title) { alert('Please enter an article title.'); return; }
+        if (!body) { alert('Please write some content for your article.'); return; }
+
+        const apiBase = (window.location.protocol === 'file:'
+          || window.location.hostname === '127.0.0.1'
+          || window.location.hostname === 'localhost'
+          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+        try {
+          const fileInput = document.getElementById('artImage');
+          // if editing, image is optional; remove required attr when editing
+          if (editingId) fileInput.removeAttribute('required'); else fileInput.setAttribute('required', 'required');
+
+          // determine if we're creating or updating
+          const isEdit = Boolean(editingId);
+
+          // base API URL
+          showSaving('Uploading image...');
+          const payload = {
+            title,
+            summary: excerpt,
+            body,
+            status: status.charAt(0).toUpperCase() + status.slice(1),
+            images: []
+          };
+          // include tags as a metadata field if present
+          if (tags) payload.tags = tags;
+          // handle image upload if a file is chosen
+          const file = fileInput && fileInput.files && fileInput.files[0];
+          if (file) {
+            const readFileAsDataURL = f => new Promise((resolve, reject) => {
+              const r = new FileReader();
+              r.onload = () => resolve(r.result);
+              r.onerror = () => reject(new Error('Failed to read file'));
+              r.readAsDataURL(f);
+            });
+            const dataUrl = await readFileAsDataURL(file);
+            const uploadRes = await fetch(`${apiBase}/api/upload-image`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image: dataUrl, name: file.name })
+            });
+            if (!uploadRes.ok) { const t = await uploadRes.text(); console.error('Image upload failed', t); throw new Error('Image upload failed'); }
+            const uploadJson = await uploadRes.json();
+            const imageUrl = uploadJson && (uploadJson.url || (uploadJson.data && uploadJson.data.url));
+            if (!imageUrl) { console.error('No image url returned', uploadJson); throw new Error('No image url returned'); }
+            payload.images = [imageUrl];
+          } else if (isEdit && existingImageUrl) {
+            // keep existing image
+            payload.images = [existingImageUrl];
+          } else if (!isEdit) {
+            hideSaving();
+            alert('Please select a feature image for the article.');
+            return;
+          }
+
+          showSaving(isEdit ? 'Updating article...' : 'Saving article...');
+
+          let res;
+          if (isEdit) {
+            res = await fetch(`${apiBase}/api/articles/${encodeURIComponent(editingId)}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+          } else {
+            res = await fetch(`${apiBase}/api/articles`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+          }
+          if (!res.ok) { const t = await res.text(); console.error('Save article failed', t); throw new Error('Save failed'); }
+
+          form.reset();
+          editingId = null;
+          existingImageUrl = null;
+          // restore required
+          fileInput.setAttribute('required', 'required');
+          document.querySelector('.btn-primary').textContent = 'Save Article';
+          await renderArticles();
+          alert(isEdit ? 'Article updated.' : 'Article saved.');
+        } catch (err) {
+          console.error('Article create failed', err);
+          alert('Unable to save article. Check console.');
+        } finally { hideSaving(); }
+      });
+
+      // start editing an article
+      async function startEdit(id) {
+        try {
+          showSaving('Loading article...');
+          const apiBase = (window.location.protocol === 'file:'
+            || window.location.hostname === '127.0.0.1'
+            || window.location.hostname === 'localhost'
+            || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+          const res = await fetch(`${apiBase}/api/articles/${encodeURIComponent(id)}`);
+          if (!res.ok) throw new Error('Article not found');
+          const article = await res.json();
+          document.getElementById('artTitle').value = article.title || '';
+          document.getElementById('artExcerpt').value = article.summary || '';
+          document.getElementById('artBody').value = article.body || '';
+          document.getElementById('artTags').value = Array.isArray(article.tags) ? article.tags.join(', ') : (article.tags || '');
+          document.getElementById('artStatus').value = (article.status || 'Draft').toLowerCase();
+          // existing image
+          existingImageUrl = Array.isArray(article.images) && article.images.length ? article.images[0] : null;
+          // make image optional during edit
+          const fileInput = document.getElementById('artImage');
+          fileInput.removeAttribute('required');
+          editingId = id;
+          document.querySelector('.btn-primary').textContent = 'Update Article';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (err) {
+          console.error('Start edit failed', err);
+          alert('Unable to load article for editing.');
+        } finally { hideSaving(); }
+      }
+
+      // delete an article
+      async function doDelete(id) {
+        if (!confirm('Delete this article? This cannot be undone.')) return;
+        try {
+          showSaving('Deleting article...');
+          const apiBase = (window.location.protocol === 'file:'
+            || window.location.hostname === '127.0.0.1'
+            || window.location.hostname === 'localhost'
+            || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+          const res = await fetch(`${apiBase}/api/articles/${encodeURIComponent(id)}`, { method: 'DELETE' });
+          if (!res.ok) { const t = await res.text(); console.error('Delete failed', t); throw new Error('Delete failed'); }
+          await renderArticles();
+          alert('Article deleted.');
+        } catch (err) {
+          console.error('Delete article failed', err);
+          alert('Unable to delete article.');
+        } finally { hideSaving(); }
+      }
+
+      // ----- Initial render -----
+      renderArticles();
+
+      // Highlight active nav link
+      const currentPage = window.location.pathname.split('/').pop() || 'article.html';
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

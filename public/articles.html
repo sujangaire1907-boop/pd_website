@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Articles – Orbit AI</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Orbit<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="solutions.html">Solutions</a></li>
+      <li><a href="casestudies.html">Case Studies</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="articles.html">Articles</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Articles &amp; Insights</h1>
+  <p>Thought leadership, industry analysis, and practical AI guidance from Orbit AI's experts</p>
+</div>
+
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Latest Articles</span>
+      <h2>AI Insights &amp; Industry Trends</h2>
+      <p>Stay ahead with expert perspectives on enterprise AI, digital transformation, and the future of work.</p>
+    </div>
+    <div id="articlesGrid" class="cards-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+      <!-- Articles will be loaded here from /api/articles -->
+      <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted);">Loading articles…</div>
+    </div>
+
+    <div class="reveal" style="text-align:center;margin-top:52px">
+      <p style="margin-bottom:18px">Subscribe to receive Orbit AI insights directly to your inbox.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;max-width:440px;margin:0 auto">
+        <input type="email" id="subscribeEmail" placeholder="Enter your email address" style="flex:1;min-width:200px" />
+        <button class="btn btn-primary" onclick="handleSubscribe()">Subscribe</button>
+      </div>
+      <p id="subscribeMsg" style="margin-top:14px;color:var(--accent);font-weight:700;display:none">Subscribed - thank you!</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Orbit AI. All rights reserved. &nbsp;|&nbsp; <a href="contact.html">Contact</a> &nbsp;|&nbsp; <a href="solutions.html">Solutions</a></p>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

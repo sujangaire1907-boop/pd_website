@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit AI · Create account</title>
+  <!-- Font & base styling -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: linear-gradient(145deg, #f0f5fe 0%, #e7eefa 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      margin: 0;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 20, 60, 0.25), 0 2px 8px rgba(0,0,0,0.02);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-accent {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .auth-sub {
+      font-size: 0.95rem;
+      color: #3b4a5e;
+      margin-bottom: 28px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #1e2a3a;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 24px;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      color: #0b1a2b;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+    }
+
+    .form-group input::placeholder {
+      color: #8b9ab0;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border: none;
+      padding: 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 10px 20px -10px rgba(37,99,235,0.3);
+      letter-spacing: -0.01em;
+      font-family: 'Inter', sans-serif;
+      margin-top: 4px;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.01);
+      box-shadow: 0 14px 28px -10px rgba(37,99,235,0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .alt-box {
+      margin-top: 24px;
+      padding: 16px 18px;
+      background: rgba(0,0,0,0.02);
+      border-radius: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #2a3b4f;
+      border: 1px solid rgba(0,0,0,0.02);
+      backdrop-filter: blur(4px);
+    }
+
+    .alt-box a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid transparent;
+      transition: border 0.15s;
+    }
+
+    .alt-box a:hover {
+      border-bottom-color: #2563eb;
+    }
+
+    #signupMessage {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: none;
+      text-align: center;
+    }
+
+    #signupMessage.success {
+      display: block;
+      background: #e6f7e6;
+      color: #0b5e2e;
+      border: 1px solid #b8e0b8;
+    }
+
+    #signupMessage.error {
+      display: block;
+      background: #fee9e9;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #5a6f88;
+      letter-spacing: 0.01em;
+    }
+
+    .footer-note a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .glass-card {
+        padding: 28px 20px;
+        border-radius: 32px;
+      }
+      .brand-name {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="brand">
+      <span class="brand-name">Orbit</span><span class="brand-accent">AI</span>
+      <span style="margin-left: auto; font-weight: 500; color: #1e2a3a; font-size: 0.9rem; background: rgba(0,0,0,0.02); padding: 4px 14px; border-radius: 40px;">Sign up</span>
+    </div>
+    <div class="auth-sub">Create your admin account. You'll be redirected to sign in after.</div>
+
+    <form id="signupForm">
+      <div class="form-group">
+        <label for="signup_username">Username</label>
+        <input id="signup_username" type="text" placeholder="Choose a username" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label for="signup_email">Email</label>
+        <input id="signup_email" type="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="signup_password">Password</label>
+        <input id="signup_password" type="password" placeholder="Create a strong password" autocomplete="new-password" />
+      </div>
+      <button class="btn-primary" type="submit">Create account →</button>
+    </form>
+
+    <div id="signupMessage"></div>
+
+    <div class="alt-box">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+
+    <div class="footer-note">
+      <a href="login.html">Back to sign in</a> · <a href="#">Privacy</a>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const form = document.getElementById('signupForm');
+      const messageBox = document.getElementById('signupMessage');
+
+      // helper to show message
+      function showMessage(text, type = 'success') {
+        messageBox.textContent = text;
+        messageBox.className = type; // 'success' or 'error'
+        messageBox.style.display = 'block';
+      }
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('signup_username').value.trim();
+        const email = document.getElementById('signup_email').value.trim();
+        const password = document.getElementById('signup_password').value.trim();
+
+        // Basic validation
+        if (!username || !email || !password) {
+          showMessage('Please fill in all fields.', 'error');
+          return;
+        }
+
+        if (password.length < 6) {
+          showMessage('Password must be at least 6 characters.', 'error');
+          return;
+        }
+
+        if (!email.includes('@') || !email.includes('.')) {
+          showMessage('Please enter a valid email address.', 'error');
+          return;
+        }
+
+        // If the page is served from Live Server or file protocol, point API to local backend
+        const apiBase = (window.location.protocol === 'file:'
+          || window.location.hostname === '127.0.0.1'
+          || window.location.hostname === 'localhost'
+          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+        fetch(`${apiBase}/api/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password }),
+        })
+          .then(async (response) => {
+            const text = await response.text();
+            let data = null;
+            try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+            if (!response.ok) {
+              throw new Error((data && data.message) || response.statusText || 'Unable to create account.');
+            }
+            showMessage('Account created! Redirecting to sign in…', 'success');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1400);
+          })
+          .catch((err) => {
+            showMessage(err.message, 'error');
+          });
+      });
+
+      // clear message on input
+      document.querySelectorAll('#signup_username, #signup_email, #signup_password').forEach(input => {
+        input.addEventListener('input', function() {
+          messageBox.style.display = 'none';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

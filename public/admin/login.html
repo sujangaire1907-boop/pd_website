@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit AI · Admin login</title>
+  <!-- Font & base styling -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: linear-gradient(145deg, #f0f5fe 0%, #e7eefa 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      margin: 0;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 20, 60, 0.25), 0 2px 8px rgba(0,0,0,0.02);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-accent {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .auth-sub {
+      font-size: 0.95rem;
+      color: #3b4a5e;
+      margin-bottom: 28px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #1e2a3a;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 24px;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      color: #0b1a2b;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+    }
+
+    .form-group input::placeholder {
+      color: #8b9ab0;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .auth-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0 18px;
+    }
+
+    .auth-actions label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #2c3d52;
+      cursor: pointer;
+    }
+
+    .auth-actions input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #2563eb;
+      border-radius: 6px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .link-muted {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      border-bottom: 1px solid transparent;
+      transition: border 0.15s;
+    }
+
+    .link-muted:hover {
+      border-bottom-color: #2563eb;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border: none;
+      padding: 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 10px 20px -10px rgba(37,99,235,0.3);
+      letter-spacing: -0.01em;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.01);
+      box-shadow: 0 14px 28px -10px rgba(37,99,235,0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .demo-hint {
+      margin-top: 24px;
+      padding: 16px 18px;
+      background: rgba(0,0,0,0.02);
+      border-radius: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #2a3b4f;
+      border: 1px solid rgba(0,0,0,0.02);
+      backdrop-filter: blur(4px);
+    }
+
+    .demo-hint strong {
+      font-weight: 600;
+      color: #0b1a2b;
+    }
+
+    .demo-hint span {
+      background: rgba(37,99,235,0.06);
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-family: 'Inter', monospace;
+      font-weight: 500;
+      color: #1e3a6b;
+    }
+
+    #loginError {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #fee9e9;
+      border-radius: 40px;
+      color: #b91c1c;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: none;
+      border: 1px solid #fecaca;
+      text-align: center;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #5a6f88;
+      letter-spacing: 0.01em;
+    }
+
+    .footer-note a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    /* smooth responsive */
+    @media (max-width: 480px) {
+      .glass-card {
+        padding: 28px 20px;
+        border-radius: 32px;
+      }
+      .brand-name {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="brand">
+      <span class="brand-name">Orbit</span><span class="brand-accent">AI</span>
+      <span style="margin-left: auto; font-weight: 500; color: #1e2a3a; font-size: 0.9rem; background: rgba(0,0,0,0.02); padding: 4px 14px; border-radius: 40px;">Admin</span>
+    </div>
+    <div class="auth-sub">Sign in to manage your content and settings.</div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="admin@orbitai.com" autocomplete="email" value="admin@orbitai.com" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" value="orbitai123" />
+      </div>
+
+      <div class="auth-actions">
+        <label>
+          <input type="checkbox" id="remember" checked /> Remember me
+        </label>
+        <a class="link-muted" href="signup.html">Create account</a>
+      </div>
+
+      <button class="btn-primary" type="submit">Sign in</button>
+    </form>
+
+    <div class="demo-hint">
+      ⚡ Demo credentials · <strong>admin</strong> / <span>orbitai123</span>
+    </div>
+
+    <div id="loginError"></div>
+
+    <div class="footer-note">
+      <a href="signup.html">Create an account</a> · <a href="#">Forgot?</a>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const form = document.getElementById('loginForm');
+      const errorBox = document.getElementById('loginError');
+
+      // Prefill saved email if available
+      const emailInput = document.getElementById('email');
+      const savedEmail = localStorage.getItem('orbitai_remember_email');
+      if (savedEmail) {
+        emailInput.value = savedEmail;
+      }
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = document.getElementById('password').value.trim();
+        // If the page is served from Live Server or file protocol, point API to local backend
+        const apiBase = (window.location.protocol === 'file:'
+          || window.location.hostname === '127.0.0.1'
+          || window.location.hostname === 'localhost'
+          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+        fetch(`${apiBase}/api/auth/signin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+          .then(async (response) => {
+            const text = await response.text();
+            let data = null;
+            try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+            if (!response.ok) {
+              throw new Error((data && data.message) || response.statusText || 'Invalid email or password.');
+            }
+            if (document.getElementById('remember').checked) {
+              localStorage.setItem('orbitai_remember_email', email);
+            }
+            localStorage.setItem('orbitai_token', data.data.token || '');
+            window.location.href = 'dashboard.html';
+          })
+          .catch((err) => {
+            errorBox.style.display = 'block';
+            errorBox.textContent = err.message;
+            errorBox.style.background = '#fee9e9';
+            errorBox.style.border = '1px solid #fecaca';
+            errorBox.style.borderRadius = '40px';
+            errorBox.style.padding = '12px 16px';
+          });
+      });
+
+      // Optional: clear error on input
+      document.querySelectorAll('#email, #password').forEach(input => {
+        input.addEventListener('input', function() {
+          errorBox.style.display = 'none';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+:root{
+  --admin-bg:#f8fafc;
+  --admin-accent:#0ea5a4;
+}
+.admin-header{position:sticky;top:0;background:#fff;z-index:60;box-shadow:0 6px 20px rgba(22,26,29,0.04)}
+.admin-header .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px 20px}
+.admin-header .nav-logo{font-weight:800;font-size:1.05rem;color:var(--accent);text-decoration:none}
+.admin-header .nav-logo span{font-weight:700;color:#0f172a}
+.admin-header .nav-links{display:flex;gap:8px;list-style:none;margin:0;padding:0}
+.admin-header .nav-links li a{padding:8px 10px;border-radius:8px;color:#0f172a;text-decoration:none}
+.admin-header .nav-links li a.active{background:rgba(14,165,164,0.12);color:var(--admin-accent);font-weight:700}
+.admin-header .nav-toggle{display:none;border:0;background:transparent;font-size:20px}
+.admin-header .nav-actions{margin-left:auto}
+
+@media (max-width:720px){
+  .admin-header .nav-toggle{display:block}
+  .admin-header .nav-links{position:absolute;left:0;right:0;top:60px;background:#fff;flex-direction:column;padding:10px;display:none}
+  .admin-header .nav-links.open{display:flex}
+}
+
+.btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 10px;border-radius:8px}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us – Orbit AI</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Orbit<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="solutions.html">Solutions</a></li>
+      <li><a href="casestudies.html">Case Studies</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="articles.html">Articles</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Contact Us</h1>
+  <p>Tell us about your challenge - our team will be in touch within one business day</p>
+</div>
+
+<section>
+  <div class="container">
+    <div class="contact-wrap">
+      <div class="reveal-left">
+        <span class="section-label">Get in Touch</span>
+        <h2>Let's Build Something Intelligent Together</h2>
+        <p style="margin:16px 0 28px">Whether you're exploring AI for the first time or looking to scale an existing programme, our enterprise AI specialists are ready to help.</p>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div><strong>Global Headquarters</strong><span>1 Innovation Drive, Level 22<br>Singapore 018989</span></div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.64 3.38 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.63a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div><strong>Phone</strong><span>+65 6123 4567</span></div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div><strong>Email</strong><span>enterprise@orbitai.com</span></div>
+        </div>
+
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div><strong>Response Time</strong><span>Within 1 business day, globally</span></div>
+        </div>
+
+        <div class="offices-box">
+          <h3>Regional Offices</h3>
+          <p>London &nbsp;·&nbsp; New York &nbsp;·&nbsp; Tokyo &nbsp;·&nbsp; Dubai &nbsp;·&nbsp; Sydney &nbsp;·&nbsp; Munich &nbsp;·&nbsp; São Paulo</p>
+        </div>
+      </div>
+
+      <div class="form-card reveal-right">
+        <h2 style="margin-bottom:6px;font-size:1.35rem">Send Us a Message</h2>
+        <p style="font-size:0.87rem;margin-bottom:28px">All fields are required. Your information is kept confidential.</p>
+
+        <form id="contactForm" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" placeholder="Jane Smith" />
+              <span class="field-error" id="fullNameError">Full name is required.</span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" placeholder="jane@company.com" />
+              <span class="field-error" id="emailError">A valid email address is required.</span>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" placeholder="+1 555 000 0000" />
+              <span class="field-error" id="phoneError">Phone number is required.</span>
+            </div>
+            <div class="form-group">
+              <label for="company">Company Name</label>
+              <input type="text" id="company" placeholder="Acme Corporation" />
+              <span class="field-error" id="companyError">Company name is required.</span>
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <select id="country">
+                <option value="">Select country…</option>
+                <option>Australia</option><option>Brazil</option><option>Canada</option>
+                <option>China</option><option>France</option><option>Germany</option>
+                <option>India</option><option>Indonesia</option><option>Japan</option>
+                <option>Malaysia</option><option>Mexico</option><option>Netherlands</option>
+                <option>New Zealand</option><option>Saudi Arabia</option><option>Singapore</option>
+                <option>South Korea</option><option>Spain</option><option>Sweden</option>
+                <option>Switzerland</option><option>United Arab Emirates</option>
+                <option>United Kingdom</option><option>United States</option>
+                <option>Vietnam</option><option>Other</option>
+              </select>
+              <span class="field-error" id="countryError">Please select your country.</span>
+            </div>
+            <div class="form-group">
+              <label for="jobTitle">Job Title</label>
+              <input type="text" id="jobTitle" placeholder="Chief Technology Officer" />
+              <span class="field-error" id="jobTitleError">Job title is required.</span>
+            </div>
+            <div class="form-group full">
+              <label for="jobDetails">How Can We Help?</label>
+              <textarea id="jobDetails" placeholder="Tell us about your organisation's challenge or the solution you're exploring…"></textarea>
+              <span class="field-error" id="jobDetailsError">Please describe how we can help.</span>
+            </div>
+          </div>
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Submit Enquiry</button>
+          </div>
+        </form>
+        <div id="contactError" class="field-error" style="display:none;margin-top:12px;text-align:center"></div>
+
+        <div class="thank-you" id="thankYou">
+          <div class="check-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3>Thank You for Reaching Out!</h3>
+          <p>Your enquiry has been received. A member of our enterprise team will contact you within one business day.</p>
+          <a href="index.html" class="btn btn-navy" style="margin-top:24px;display:inline-flex">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Orbit AI. All rights reserved. &nbsp;|&nbsp; <a href="contact.html">Contact</a> &nbsp;|&nbsp; <a href="solutions.html">Solutions</a></p>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>

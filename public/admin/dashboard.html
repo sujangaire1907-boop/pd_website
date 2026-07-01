@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit AI · Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #f2f6fe;
+      min-height: 100vh;
+      color: #0b1a2b;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ----- HEADER / NAVBAR ----- */
+    .navbar {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding: 0 36px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.02);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .nav-brand span {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 8px 18px;
+      border-radius: 40px;
+      text-decoration: none;
+      color: #2c3d52;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      background: rgba(37,99,235,0.06);
+      color: #1a3b6b;
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #2c3d52;
+      cursor: pointer;
+      transition: all 0.15s;
+      backdrop-filter: blur(4px);
+      background: rgba(255,255,255,0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239,68,68,0.06);
+      border-color: #ef4444;
+      color: #dc2626;
+    }
+
+    /* mobile toggle */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 26px;
+      height: 2.5px;
+      background: #1e2a3a;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+
+    /* ----- MAIN CONTENT ----- */
+    .dashboard-wrap {
+      flex: 1;
+      max-width: 1280px;
+      margin: 24px auto;
+      width: 100%;
+      padding: 0 36px;
+    }
+
+    .dash-content {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px;
+      padding: 32px 36px;
+      box-shadow: 0 30px 60px -20px rgba(0, 20, 50, 0.25), 0 2px 10px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .dash-header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+
+    .dash-header p {
+      color: #3b4a5e;
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    /* stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 20px 22px;
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      transition: transform 0.15s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .stat-card strong {
+      display: block;
+      font-weight: 500;
+      color: #2c3d52;
+      font-size: 0.85rem;
+      letter-spacing: 0.01em;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-top: 8px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .stat-value.accent2 {
+      background: linear-gradient(135deg, #0891b2, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-value.accent3 {
+      background: linear-gradient(135deg, #059669, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* table */
+    .table-section h3 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #0b1a2b;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .table-wrap {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 28px;
+      overflow: auto;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 4px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 18px 20px;
+      font-weight: 600;
+      color: #1e2a3a;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      letter-spacing: 0.01em;
+      background: rgba(255,255,255,0.3);
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+      color: #1e2a3a;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      background: rgba(37,99,235,0.08);
+      color: #2563eb;
+    }
+
+    .status-badge.resolved {
+      background: rgba(5,150,105,0.1);
+      color: #059669;
+    }
+
+    .status-badge.unread {
+      background: rgba(239,68,68,0.08);
+      color: #dc2626;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #5a6f88;
+    }
+
+    /* ----- FOOTER ----- */
+    .footer {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding: 20px 36px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #5a6f88;
+      margin-top: auto;
+    }
+
+    .footer a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 20px;
+        height: 64px;
+        flex-wrap: wrap;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        gap: 4px;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 12px 16px;
+        width: 100%;
+        border-radius: 12px;
+      }
+
+      .nav-actions {
+        gap: 8px;
+      }
+
+      .dashboard-wrap {
+        padding: 0 16px;
+        margin: 16px auto;
+      }
+
+      .dash-content {
+        padding: 20px 16px;
+        border-radius: 32px;
+      }
+
+      .dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+      }
+
+      .footer {
+        padding: 16px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0 12px;
+      }
+      .nav-brand {
+        font-size: 1.1rem;
+      }
+      .btn-logout {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* reply modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+    }
+    .modal-card {
+      width: 720px;
+      max-width: 100%;
+      background: white;
+      border-radius: 32px;
+      padding: 28px 32px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .modal-card h3 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .modal-card p {
+      color: #4b5563;
+      margin-bottom: 16px;
+    }
+    .modal-card input, .modal-card textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      transition: 0.15s;
+      margin-bottom: 12px;
+      background: #fafcff;
+    }
+    .modal-card input:focus, .modal-card textarea:focus {
+      outline: 2px solid #2563eb;
+      border-color: transparent;
+    }
+    .modal-card textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .modal-actions .btn-logout {
+      padding: 10px 24px;
+    }
+    .modal-actions .btn-logout.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+    .modal-actions .btn-logout.primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: white;
+    }
+    .table-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 6px 18px;
+      gap: 12px;
+    }
+    .table-footer select {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 40px;
+      padding: 6px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+    }
+    .pagination-buttons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .pagination-buttons .btn-logout {
+      padding: 6px 14px;
+    }
+    .pagination-buttons .btn-logout:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== HEADER / NAVBAR ===== -->
+  <header class="navbar">
+    <a href="dashboard.html" class="nav-brand">Orbit<span>AI</span></a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="galleries.html">Galleries</a></li>
+      <li><a href="event.html">Events</a></li>
+      <li><a href="article.html">Articles</a></li>
+      <li><a href="users.html">Users</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn-logout" id="logoutBtn">Sign out</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="dashboard-wrap">
+    <div class="dash-content">
+      <div class="dash-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Overview of site activity and recent inquiries</p>
+        </div>
+      </div>
+
+      <!-- stats -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <strong>Total Inquiries</strong>
+          <div class="stat-value" id="totalCount">—</div>
+        </div>
+        <div class="stat-card">
+          <strong>Unread</strong>
+          <div class="stat-value accent2" id="newCount">—</div>
+        </div>
+        <div class="stat-card">
+          <strong>Resolved</strong>
+          <div class="stat-value accent3" id="resolvedCount">—</div>
+        </div>
+      </div>
+
+      <!-- table -->
+      <div class="table-section">
+        <h3>Recent Inquiries</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name / Email</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inquiryTableBody">
+              <tr><td colspan="5" class="empty-state">Loading inquiries…</td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <div>
+              <label>Show
+                <select id="pageSizeSelect">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                </select>
+                entries
+              </label>
+            </div>
+            <div class="pagination-buttons">
+              <button id="prevPageBtn" class="btn-logout">Prev</button>
+              <span id="pageInfo" style="font-size:0.9rem;color:#4b5563;"></span>
+              <button id="nextPageBtn" class="btn-logout">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    &copy; 2025 <a href="#">Orbit AI</a> · All rights reserved · 
+    <a href="#">Privacy</a> · <a href="#">Terms</a>
+  </footer>
+
+  <script>
+    (function() {
+      // ----- Mobile nav toggle -----
+      const toggle = document.getElementById('navToggle');
+      const navLinks = document.getElementById('navLinks');
+
+      if (toggle && navLinks) {
+        toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          navLinks.classList.toggle('open');
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.navbar')) {
+            navLinks.classList.remove('open');
+          }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+          });
+        });
+      }
+
+      // ----- Logout -----
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        window.location.href = 'login.html';
+      });
+
+      // ----- helpers -----
+      function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(text).replace(/[&<>"']/g, m => map[m]);
+      }
+
+      function getApiBase() {
+        if (window.location.protocol === 'file:' ||
+            window.location.hostname === '127.0.0.1' ||
+            window.location.hostname === 'localhost' ||
+            (window.location.port && window.location.port !== '4000')) {
+          return 'http://localhost:4000';
+        }
+        return '';
+      }
+
+      // ----- state -----
+      let inquiries = [];
+      let currentPage = 1;
+      let pageSize = Number(localStorage.getItem('orbit_page_size')) || 10;
+
+      // DOM refs
+      const tbody = document.getElementById('inquiryTableBody');
+      const totalEl = document.getElementById('totalCount');
+      const newEl = document.getElementById('newCount');
+      const resolvedEl = document.getElementById('resolvedCount');
+      const pageInfo = document.getElementById('pageInfo');
+      const pageSizeSelect = document.getElementById('pageSizeSelect');
+      const prevBtn = document.getElementById('prevPageBtn');
+      const nextBtn = document.getElementById('nextPageBtn');
+
+      pageSizeSelect.value = pageSize;
+
+      // ----- render -----
+      function renderPage() {
+        const totalItems = inquiries.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = inquiries.slice(start, start + pageSize);
+
+        // stats
+        totalEl.textContent = totalItems;
+        newEl.textContent = inquiries.filter(item => String(item.status || '').toLowerCase() === 'unread').length;
+        resolvedEl.textContent = inquiries.filter(item => String(item.status || '').toLowerCase() === 'resolved').length;
+
+        if (pageItems.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No inquiries yet.</td></tr>`;
+        } else {
+          tbody.innerHTML = pageItems.map(item => {
+            const statusRaw = String(item.status || 'new').toLowerCase();
+            const statusClass = statusRaw === 'resolved' ? 'resolved' : (statusRaw === 'unread' ? 'unread' : '');
+            const statusLabel = statusRaw.charAt(0).toUpperCase() + statusRaw.slice(1);
+            const displayDate = item.createdAt ? new Date(item.createdAt).toLocaleString() : (item.date || '—');
+            return `
+              <tr data-id="${escapeHtml(item.id)}">
+                <td><strong>${escapeHtml(item.fullName || item.name || '—')}</strong><br><span style="color:#5a6f88;font-size:0.8rem;">${escapeHtml(item.email || '')}</span></td>
+                <td>${escapeHtml(item.company || item.organization || '—')}</td>
+                <td>${escapeHtml(displayDate)}</td>
+                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                <td>
+                  <button class="btn-logout" data-action="toggle-status" data-id="${escapeHtml(item.id)}">${statusRaw === 'resolved' ? 'Mark Unread' : 'Mark Resolved'}</button>
+                  <button class="btn-logout" data-action="reply" data-id="${escapeHtml(item.id)}" data-email="${escapeHtml(item.email||'')}" data-name="${escapeHtml(item.fullName||item.name||'')}">Reply</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+
+        // attach row actions
+        tbody.querySelectorAll('button[data-action]').forEach(btn => {
+          btn.addEventListener('click', handleRowAction);
+        });
+      }
+
+      // ----- fetch data -----
+      async function fetchInquiries() {
+        const apiBase = getApiBase();
+        try {
+          const res = await fetch(`${apiBase}/api/inquiries`);
+          if (!res.ok) throw new Error(res.statusText || 'Failed to load');
+          const data = await res.json();
+          inquiries = Array.isArray(data) ? data : [];
+          inquiries.sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0));
+          currentPage = 1;
+          renderPage();
+        } catch (err) {
+          console.error('Fetch error:', err);
+          tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load inquiries.</td></tr>`;
+        }
+      }
+
+      // ----- row actions -----
+      async function handleRowAction(e) {
+        const btn = e.currentTarget;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if (!action || !id) return;
+        const apiBase = getApiBase();
+
+        if (action === 'toggle-status') {
+          const item = inquiries.find(x => x.id === id);
+          if (!item) return;
+          const newStatus = (String(item.status || '').toLowerCase() === 'resolved') ? 'unread' : 'resolved';
+          try {
+            const res = await fetch(`${apiBase}/api/inquiries/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: newStatus })
+            });
+            if (!res.ok) throw new Error(res.statusText || 'Update failed');
+            item.status = newStatus;
+            renderPage();
+          } catch (err) {
+            alert('Error updating status: ' + (err.message || ''));
+          }
+        }
+
+        if (action === 'reply') {
+          const email = btn.dataset.email || '';
+          const name = btn.dataset.name || '';
+          openReplyModal(id, email, name);
+        }
+      }
+
+      // ----- reply modal -----
+      function openReplyModal(id, email, name) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.id = 'replyModal';
+        overlay.innerHTML = `
+          <div class="modal-card">
+            <h3>Reply to ${escapeHtml(name || email)}</h3>
+            <p>${escapeHtml(email)}</p>
+            <input id="replySubject" placeholder="Subject" />
+            <textarea id="replyMessage" placeholder="Write your reply here…"></textarea>
+            <div class="modal-actions">
+              <button class="btn-logout" id="replyCancel">Cancel</button>
+              <button class="btn-logout primary" id="replySend">Send Reply</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('replyCancel').addEventListener('click', () => overlay.remove());
+        document.getElementById('replySend').addEventListener('click', async () => {
+          const subject = document.getElementById('replySubject').value.trim();
+          const message = document.getElementById('replyMessage').value.trim();
+          if (!subject || !message) { alert('Please enter subject and message'); return; }
+          const apiBase = getApiBase();
+          try {
+            const res = await fetch(`${apiBase}/api/inquiries/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ subject, message })
+            });
+            if (!res.ok) throw new Error(res.statusText || 'Send failed');
+            alert('Reply sent');
+            overlay.remove();
+          } catch (err) {
+            alert('Error sending reply: ' + (err.message || ''));
+          }
+        });
+      }
+
+      // ----- pagination events -----
+      prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(); } });
+      nextBtn.addEventListener('click', () => { const totalPages = Math.max(1, Math.ceil(inquiries.length / pageSize)); if (currentPage < totalPages) { currentPage++; renderPage(); } });
+      pageSizeSelect.addEventListener('change', () => {
+        pageSize = Number(pageSizeSelect.value);
+        localStorage.setItem('orbit_page_size', String(pageSize));
+        currentPage = 1;
+        renderPage();
+      });
+
+      // init
+      fetchInquiries();
+    })();
+  </script>
+</body>
+</html>

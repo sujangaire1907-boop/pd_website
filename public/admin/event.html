@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbit AI · Events</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #f2f6fe;
+      min-height: 100vh;
+      color: #0b1a2b;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ----- HEADER / NAVBAR ----- */
+    .navbar {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding: 0 36px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.02);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .nav-brand span {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 8px 18px;
+      border-radius: 40px;
+      text-decoration: none;
+      color: #2c3d52;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      background: rgba(37,99,235,0.06);
+      color: #1a3b6b;
+    }
+
+    .nav-links a.active {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #2c3d52;
+      cursor: pointer;
+      transition: all 0.15s;
+      backdrop-filter: blur(4px);
+      background: rgba(255,255,255,0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239,68,68,0.06);
+      border-color: #ef4444;
+      color: #dc2626;
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 26px;
+      height: 2.5px;
+      background: #1e2a3a;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+
+    /* ----- MAIN CONTENT ----- */
+    .main-wrap {
+      flex: 1;
+      max-width: 1280px;
+      margin: 24px auto;
+      width: 100%;
+      padding: 0 36px;
+    }
+
+    .content-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px;
+      padding: 32px 36px;
+      box-shadow: 0 30px 60px -20px rgba(0, 20, 50, 0.25), 0 2px 10px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0c1e3e, #1a3b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+
+    .page-header p {
+      color: #3b4a5e;
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    /* event form */
+    .event-form {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #2c3d52;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      color: #0b1a2b;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+      background: rgba(255,255,255,0.9);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      min-width: 180px;
+      margin-bottom: 0;
+    }
+
+    .form-row .form-group:last-child {
+      flex: 0 1 auto;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border: none;
+      padding: 12px 32px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 10px 20px -10px rgba(37,99,235,0.3);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 14px 28px -10px rgba(37,99,235,0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 12px 32px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #2c3d52;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,0,0,0.08);
+    }
+
+    /* event list */
+    .event-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .event-card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 24px;
+      padding: 20px 24px;
+      border: 1px solid rgba(255,255,255,0.7);
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: transform 0.15s;
+    }
+
+    .event-card:hover {
+      transform: translateX(4px);
+    }
+
+    .event-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #eef4f8;
+    }
+
+    .event-info {
+      flex: 1;
+    }
+
+    .event-info h4 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: #5a6f88;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+
+    .event-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .event-description {
+      color: #3b4a5e;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .event-status {
+      display: inline-block;
+      padding: 3px 14px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .event-status.draft {
+      background: rgba(107,114,128,0.1);
+      color: #6b7280;
+    }
+
+    .event-status.published {
+      background: rgba(37,99,235,0.08);
+      color: #2563eb;
+    }
+
+    .event-status.cancelled {
+      background: rgba(239,68,68,0.08);
+      color: #dc2626;
+    }
+
+    .empty-events {
+      text-align: center;
+      padding: 60px 20px;
+      color: #5a6f88;
+      background: rgba(255,255,255,0.3);
+      border-radius: 28px;
+    }
+
+    /* ----- FOOTER ----- */
+    .footer {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding: 20px 36px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #5a6f88;
+      margin-top: auto;
+    }
+
+    .footer a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 20px;
+        height: 64px;
+        flex-wrap: wrap;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        gap: 4px;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 12px 16px;
+        width: 100%;
+        border-radius: 12px;
+      }
+
+      .main-wrap {
+        padding: 0 16px;
+        margin: 16px auto;
+      }
+
+      .content-card {
+        padding: 20px 16px;
+        border-radius: 32px;
+      }
+
+      .event-form {
+        padding: 18px 16px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .form-row .form-group {
+        min-width: auto;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .event-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+      }
+
+      .event-image {
+        width: 100%;
+        height: 180px;
+      }
+
+      .footer {
+        padding: 16px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0 12px;
+      }
+      .nav-brand {
+        font-size: 1.1rem;
+      }
+      .btn-logout {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+      }
+      .event-image {
+        height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== HEADER / NAVBAR ===== -->
+  <header class="navbar">
+    <a href="dashboard.html" class="nav-brand">Orbit<span>AI</span></a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="galleries.html">Galleries</a></li>
+      <li><a href="event.html" class="active">Events</a></li>
+      <li><a href="article.html">Articles</a></li>
+      <li><a href="users.html">Users</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn-logout" id="logoutBtn">Sign out</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-wrap">
+    <div class="content-card">
+      <div class="page-header">
+        <h1>Events</h1>
+        <p>Manage events, conferences, and meetups. Create and organize your events below.</p>
+      </div>
+
+      <!-- Event Form -->
+      <form id="eventForm" class="event-form">
+        <div class="form-group">
+          <label for="evTitle">Event Title *</label>
+          <input type="text" id="evTitle" placeholder="e.g., Annual Tech Conference 2025" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="evDate">Date *</label>
+            <input type="date" id="evDate" required />
+          </div>
+          <div class="form-group">
+            <label for="evTime">Time</label>
+            <input type="time" id="evTime" />
+          </div>
+          <div class="form-group">
+            <label for="evLocation">Location</label>
+            <input type="text" id="evLocation" placeholder="e.g., San Francisco, CA" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="evDesc">Description</label>
+          <textarea id="evDesc" placeholder="Describe the event, agenda, speakers, etc." rows="4"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="evImage">Event Image</label>
+            <input type="file" id="evImage" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label for="evStatus">Status</label>
+            <select id="evStatus">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" type="submit">Save Event</button>
+          <button class="btn-secondary" type="reset">Clear</button>
+        </div>
+      </form>
+
+      <!-- Event List -->
+      <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:16px;">Upcoming & Past Events</h3>
+      <div class="event-list" id="eventList">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    &copy; 2025 <a href="#">Orbit AI</a> · All rights reserved · 
+    <a href="#">Privacy</a> · <a href="#">Terms</a>
+  </footer>
+
+  <script>
+    (function() {
+      // ----- Mobile nav toggle -----
+      const toggle = document.getElementById('navToggle');
+      const navLinks = document.getElementById('navLinks');
+
+      if (toggle && navLinks) {
+        toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          navLinks.classList.toggle('open');
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.navbar')) {
+            navLinks.classList.remove('open');
+          }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+          });
+        });
+      }
+
+      // ----- Logout -----
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        window.location.href = 'login.html';
+      });
+
+      // ----- Event functions -----
+      async function renderEvents() {
+        const list = document.getElementById('eventList');
+        list.innerHTML = `<div class="empty-events">Loading events…</div>`;
+        try {
+          const apiBase = (window.location.protocol === 'file:'
+            || window.location.hostname === '127.0.0.1'
+            || window.location.hostname === 'localhost'
+            || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+          const res = await fetch(`${apiBase}/api/events`);
+          if (!res.ok) throw new Error('Failed to fetch events');
+          const items = await res.json();
+          if (!Array.isArray(items) || items.length === 0) {
+            list.innerHTML = `<div class="empty-events">No events yet. Create your first event above!</div>`;
+            return;
+          }
+
+          // Sort by eventDate (desc)
+          const sorted = [...items].sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
+
+            // cache events for edit actions
+            window.__events = items;
+
+          list.innerHTML = sorted.map(event => {
+            const statusClass = (event.status || 'draft').toLowerCase();
+            const statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+            const dateDisplay = event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', {
+              year: 'numeric', month: 'short', day: 'numeric'
+            }) : 'TBD';
+            const timeDisplay = event.startTime || '';
+            const locationDisplay = event.location || 'TBD';
+            const imageHtml = event.image || event.url ?
+              `<img src="${escapeHtml(event.image || event.url)}" alt="${escapeHtml(event.title)}" class="event-image" />` :
+              `<div class="event-image" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#eef4f8,#dce4ed);color:#8b9ab0;font-size:0.8rem;">No image</div>`;
+
+            return `
+              <div class="event-card" data-id="${escapeHtml(event.id)}">
+                ${imageHtml}
+                <div class="event-info">
+                  <h4>${escapeHtml(event.title)}</h4>
+                  <div class="event-meta">
+                    <span>Date: ${dateDisplay}${timeDisplay ? ` at ${escapeHtml(timeDisplay)}` : ''}</span>
+                    <span>Location: ${escapeHtml(locationDisplay)}</span>
+                    <span class="event-status ${statusClass}">${statusLabel}</span>
+                  </div>
+                  ${event.description ? `<div class="event-description">${escapeHtml(event.description)}</div>` : ''}
+                  <div style="margin-top:12px;display:flex;gap:8px;">
+                    <button class="btn-primary" data-action="edit" data-id="${escapeHtml(event.id)}">Edit</button>
+                    <button class="btn-secondary" data-action="toggle" data-id="${escapeHtml(event.id)}">${statusClass === 'published' ? 'Unpublish' : 'Publish'}</button>
+                    <button class="btn-secondary" data-action="delete" data-id="${escapeHtml(event.id)}">Delete</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } catch (err) {
+          console.error('Render events failed', err);
+          list.innerHTML = `<div class="empty-events">Unable to load events.</div>`;
+        }
+      }
+
+      // Attach action handlers after render
+      document.addEventListener('click', async (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if (!action || !id) return;
+        const apiBase = (window.location.protocol === 'file:'
+          || window.location.hostname === '127.0.0.1'
+          || window.location.hostname === 'localhost'
+          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+        if (action === 'delete') {
+          if (!confirm('Delete this event? This cannot be undone.')) return;
+          try {
+            showSaving('Deleting event, please wait...');
+            const res = await fetch(`${apiBase}/api/events/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Delete failed');
+            await renderEvents();
+            alert('Event deleted');
+          } catch (err) { console.error(err); alert('Unable to delete event.'); }
+          finally { hideSaving(); }
+        }
+
+        if (action === 'toggle') {
+          try {
+            showSaving('Updating status, please wait...');
+            const ev = (window.__events || []).find(x => x.id === id);
+            if (!ev) throw new Error('Event not found');
+            const newStatus = (String(ev.status || '').toLowerCase() === 'published') ? 'Draft' : 'Published';
+            const res = await fetch(`${apiBase}/api/events/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ title: ev.title, eventDate: ev.eventDate || ev.date || ev.createdAt, location: ev.location || '', startTime: ev.startTime || ev.time || '', endTime: ev.endTime || '', mode: ev.mode || 'In Person', featured: !!ev.featured, description: ev.description || '', status: newStatus }) });
+            if (!res.ok) throw new Error('Toggle failed');
+            await renderEvents();
+          } catch (err) { console.error(err); alert('Unable to toggle status.'); }
+          finally { hideSaving(); }
+        }
+
+        if (action === 'edit') {
+          openEditModal(id);
+        }
+      });
+
+      function openEditModal(id) {
+        const ev = (window.__events || []).find(x => x.id === id);
+        if (!ev) { alert('Event not found'); return; }
+        let modal = document.getElementById('editEventModal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'editEventModal';
+          modal.innerHTML = `
+            <div style="position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:200;">
+              <div style="width:760px;max-width:96%;background:white;border-radius:12px;padding:18px;">
+                <h3 id="editTitle">Edit Event</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+                  <input id="editEvTitle" placeholder="Title" />
+                  <input id="editEvDate" type="date" />
+                  <input id="editEvTime" type="time" />
+                  <input id="editEvLocation" placeholder="Location" />
+                </div>
+                <textarea id="editEvDesc" style="width:100%;height:120px;margin-top:8px;" placeholder="Description"></textarea>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+                  <input id="editEvImage" type="file" accept="image/*" />
+                  <select id="editEvStatus">
+                    <option value="Draft">Draft</option>
+                    <option value="Published">Published</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                  <button id="editCancel" class="btn-secondary">Cancel</button>
+                  <button id="editSave" class="btn-primary">Save</button>
+                </div>
+              </div>
+            </div>`;
+          document.body.appendChild(modal);
+
+          document.getElementById('editCancel').addEventListener('click', () => modal.remove());
+          document.getElementById('editSave').addEventListener('click', async () => {
+            const title = document.getElementById('editEvTitle').value.trim();
+            const date = document.getElementById('editEvDate').value;
+            const time = document.getElementById('editEvTime').value;
+            const location = document.getElementById('editEvLocation').value.trim();
+            const description = document.getElementById('editEvDesc').value.trim();
+            const status = document.getElementById('editEvStatus').value;
+            const file = document.getElementById('editEvImage').files[0];
+            if (!title || !date) { alert('Title and date required'); return; }
+
+            try {
+              showSaving('Saving, please wait...');
+              const apiBase = (window.location.protocol === 'file:'
+                || window.location.hostname === '127.0.0.1'
+                || window.location.hostname === 'localhost'
+                || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+              let imageUrl = ev.image || ev.url || null;
+              if (file) {
+                const reader = new FileReader();
+                const dataUrl = await new Promise((resolve, reject) => {
+                  reader.onload = () => resolve(reader.result);
+                  reader.onerror = reject;
+                  reader.readAsDataURL(file);
+                });
+                const upRes = await fetch(`${apiBase}/api/upload-image`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ image: dataUrl, name: title }) });
+                if (!upRes.ok) { const t = await upRes.text(); console.error('Upload failed', t); throw new Error('Upload failed'); }
+                const upBody = await upRes.json();
+                imageUrl = upBody.url || upBody.data?.url || imageUrl;
+              }
+
+              const payload = { title, location, eventDate: date, startTime: time || '', endTime: '', mode: 'In Person', featured: false, description, status };
+              if (imageUrl) payload.image = imageUrl;
+
+              const res = await fetch(`${apiBase}/api/events/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+              if (!res.ok) { const t = await res.text(); console.error('Save failed', t); throw new Error('Save failed'); }
+              modal.remove();
+              await renderEvents();
+              alert('Event updated');
+            } catch (err) { console.error(err); alert('Unable to update event.'); }
+            finally { hideSaving(); }
+          });
+        }
+
+        // populate fields
+        document.getElementById('editEvTitle').value = ev.title || '';
+        document.getElementById('editEvDate').value = ev.eventDate ? ev.eventDate.split('T')[0] : (ev.date ? ev.date.split('T')[0] : '');
+        document.getElementById('editEvTime').value = ev.startTime || ev.time || '';
+        document.getElementById('editEvLocation').value = ev.location || '';
+        document.getElementById('editEvDesc').value = ev.description || '';
+        document.getElementById('editEvStatus').value = ev.status || 'Draft';
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(text).replace(/[&<>"']/g, m => map[m]);
+      }
+
+      // Small saving overlay
+      function showSaving(msg = 'Saving, please wait…') {
+        let o = document.getElementById('savingOverlay');
+        if (!o) {
+          o = document.createElement('div');
+          o.id = 'savingOverlay';
+          o.style.position = 'fixed';
+          o.style.inset = '0';
+          o.style.display = 'flex';
+          o.style.alignItems = 'center';
+          o.style.justifyContent = 'center';
+          o.style.background = 'rgba(2,6,23,0.45)';
+          o.style.zIndex = '9999';
+          o.innerHTML = `<div style="background:white;padding:14px 18px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.3);font-weight:700;color:#0b1a2b">${msg}</div>`;
+          document.body.appendChild(o);
+        } else {
+          o.firstElementChild.textContent = msg;
+          o.style.display = 'flex';
+        }
+      }
+
+      function hideSaving() {
+        const o = document.getElementById('savingOverlay');
+        if (o) o.style.display = 'none';
+      }
+
+      // ----- Handle event creation -----
+      const form = document.getElementById('eventForm');
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('evTitle').value.trim();
+        const date = document.getElementById('evDate').value;
+        const time = document.getElementById('evTime').value;
+        const location = document.getElementById('evLocation').value.trim();
+        const description = document.getElementById('evDesc').value.trim();
+        const status = document.getElementById('evStatus').value;
+        const file = document.getElementById('evImage').files[0];
+
+        if (!title) { alert('Please enter an event title.'); return; }
+        if (!date) { alert('Please select a date.'); return; }
+
+        const apiBase = (window.location.protocol === 'file:'
+          || window.location.hostname === '127.0.0.1'
+          || window.location.hostname === 'localhost'
+          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+
+        try {
+          showSaving('Saving, please wait...');
+          let imageUrl = null;
+
+          if (file) {
+            const reader = new FileReader();
+            const dataUrl = await new Promise((resolve, reject) => {
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+
+            const upRes = await fetch(`${apiBase}/api/upload-image`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ image: dataUrl, name: title }) });
+            if (!upRes.ok) { const t = await upRes.text(); console.error('Upload failed', t); throw new Error('Upload failed'); }
+            const upBody = await upRes.json();
+            imageUrl = upBody.url || upBody.data?.url || null;
+          }
+
+          const payload = {
+            title,
+            location,
+            eventDate: date,
+            startTime: time || '',
+            endTime: '',
+            mode: 'In Person',
+            featured: false,
+            description,
+            status: status.charAt(0).toUpperCase() + status.slice(1),
+          };
+          if (imageUrl) payload.image = imageUrl;
+
+          const saveRes = await fetch(`${apiBase}/api/events`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+          if (!saveRes.ok) { const t = await saveRes.text(); console.error('Save event failed', t); throw new Error('Save failed'); }
+
+          form.reset();
+          await renderEvents();
+          alert('Event saved.');
+        } catch (err) {
+          console.error('Event create failed', err);
+          alert('Unable to save event. Check console.');
+        } finally {
+          hideSaving();
+        }
+      });
+
+      // ----- Initial render -----
+      renderEvents();
+
+      // Highlight active nav link
+      const currentPage = window.location.pathname.split('/').pop() || 'event.html';
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
