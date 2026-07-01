@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article Detail – Orbit AI</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Orbit<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="solutions.html">Solutions</a></li>
+      <li><a href="casestudies.html">Case Studies</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="articles.html">Articles</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Article Insight</h1>
+  <p>Deep dive into the latest Orbit AI research, case studies, and product thinking.</p>
+</div>
+
+<section>
+  <div class="container">
+    <div id="articleError" class="empty-articles" style="display:none; text-align:center;"></div>
+    <div id="articleDetail">
+      <div class="empty-articles">Loading article…</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Orbit AI. All rights reserved. &nbsp;|&nbsp; <a href="contact.html">Contact</a> &nbsp;|&nbsp; <a href="solutions.html">Solutions</a></p>
+</footer>
+
+<script>
+  function getApiBase() {
+    const host = window.location.hostname;
+    if (window.location.protocol === 'file:'
+      || host === '127.0.0.1'
+      || host === 'localhost'
+      || (window.location.port && window.location.port !== '4000')) {
+      return `http://${host}:4000`;
+    }
+    return '';
+  }
+
+  function createTextNode(tag, text, className) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    el.textContent = text;
+    return el;
+  }
+
+  function renderArticle(article) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'article-detail';
+
+    const imageUrl = (article.images && article.images[0]) || 'https://picsum.photos/seed/article/1200/600';
+    const header = document.createElement('div');
+    header.className = 'article-detail-header';
+    header.innerHTML = `
+      <img src="${imageUrl}" alt="${article.title || 'Article'}" style="width:100%;border-radius:18px;max-height:420px;object-fit:cover;margin-bottom:28px;" />
+    `;
+
+    const meta = document.createElement('div');
+    meta.style.display = 'flex';
+    meta.style.flexWrap = 'wrap';
+    meta.style.gap = '12px';
+    meta.style.marginBottom = '16px';
+
+    const tag = document.createElement('span');
+    tag.className = 'article-tag';
+    tag.style.background = 'rgba(0,198,255,0.12)';
+    tag.style.color = 'var(--navy)';
+    tag.style.padding = '7px 14px';
+    tag.style.borderRadius = '999px';
+    tag.style.fontSize = '0.82rem';
+    tag.textContent = article.tag || article.category || 'Insight';
+
+    const date = document.createElement('span');
+    date.className = 'article-date';
+    date.textContent = article.publishedAt
+      ? new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      : article.createdAt
+        ? new Date(article.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'Recent';
+    date.style.color = 'var(--text-light)';
+
+    meta.appendChild(tag);
+    meta.appendChild(date);
+
+    const title = createTextNode('h2', article.title || 'Untitled article');
+    title.style.marginBottom = '18px';
+
+    const summary = createTextNode('p', article.summary || article.excerpt || 'Explore this insight from Orbit AI.');
+    summary.style.marginBottom = '28px';
+    summary.style.fontSize = '1.05rem';
+    summary.style.color = 'var(--text-light)';
+
+    const bodySection = document.createElement('div');
+    bodySection.style.display = 'grid';
+    bodySection.style.gap = '18px';
+
+    const bodyText = String(article.body || article.summary || 'No content is available for this article.').trim();
+    const paragraphs = bodyText.split(/\n{2,}|\r\n{2,}/g);
+    paragraphs.forEach(text => {
+      if (!text.trim()) return;
+      const p = document.createElement('p');
+      p.textContent = text.trim();
+      p.style.marginBottom = '16px';
+      bodySection.appendChild(p);
+    });
+
+    const backLink = document.createElement('a');
+    backLink.href = 'articles.html';
+    backLink.className = 'btn btn-outline';
+    backLink.style.marginTop = '30px';
+    backLink.textContent = 'Back to Articles';
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(meta);
+    wrapper.appendChild(title);
+    wrapper.appendChild(summary);
+    wrapper.appendChild(bodySection);
+    wrapper.appendChild(backLink);
+
+    const container = document.getElementById('articleDetail');
+    if (container) {
+      container.innerHTML = '';
+      container.appendChild(wrapper);
+    }
+  }
+
+  async function loadArticleDetail() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const container = document.getElementById('articleDetail');
+    const errorBox = document.getElementById('articleError');
+    if (!id) {
+      if (container) container.innerHTML = '';
+      if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'Article ID is missing from the URL.'; }
+      return;
+    }
+
+    try {
+      const base = getApiBase();
+      const res = await fetch(`${base}/api/articles/${encodeURIComponent(id)}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || 'Article not found');
+      }
+      const article = await res.json();
+      renderArticle(article);
+    } catch (err) {
+      if (container) container.innerHTML = '';
+      if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = `Unable to load article: ${err.message}`; }
+      console.error('Article detail load error:', err);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', loadArticleDetail);
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>

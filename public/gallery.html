@@ -35,21 +35,11 @@
     <div class="section-header reveal">
       <span class="section-label">Our World</span>
       <h2>Orbit AI in Action</h2>
-          <p>From global summits to product launches - moments that define our journey and culture.</p>
+      <p>From global summits to product launches - moments that define our journey and culture.</p>
     </div>
-    <div class="gallery-grid">
-      <div class="gallery-item"><img src="https://picsum.photos/seed/event1/600/450" alt="Orbit AI Global Summit 2025" loading="lazy"/><div class="overlay"><span>Orbit AI Global Summit 2025</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/conf2/600/450" alt="AI Innovation Conference, Singapore" loading="lazy"/><div class="overlay"><span>AI Innovation Conference, Singapore</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/team3/600/450" alt="AI Virtual Assistant v4 Launch" loading="lazy"/><div class="overlay"><span>AI Virtual Assistant v4 Launch</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/office4/600/450" alt="London Office Opening" loading="lazy"/><div class="overlay"><span>London Office Opening</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/award5/600/450" alt="AI Excellence Awards 2024" loading="lazy"/><div class="overlay"><span>AI Excellence Awards 2024</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/hack6/600/450" alt="Orbit AI Hackathon, Tokyo" loading="lazy"/><div class="overlay"><span>Orbit AI Hackathon, Tokyo</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/client7/600/450" alt="Client Success Summit, Dubai" loading="lazy"/><div class="overlay"><span>Client Success Summit, Dubai</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/tech8/600/450" alt="TechForward Expo 2024" loading="lazy"/><div class="overlay"><span>TechForward Expo 2024</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/team9/600/450" alt="Orbit AI Team Offsite 2024" loading="lazy"/><div class="overlay"><span>Orbit AI Team Offsite 2024</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/demo10/600/450" alt="Live Demo Day, New York" loading="lazy"/><div class="overlay"><span>Live Demo Day, New York</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/keynote11/600/450" alt="CEO Keynote, World AI Forum" loading="lazy"/><div class="overlay"><span>CEO Keynote, World AI Forum</span></div></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/partner12/600/450" alt="Strategic Partnership Announcement" loading="lazy"/><div class="overlay"><span>Strategic Partnership Announcement</span></div></div>
+    <div id="galleryCategories" class="gallery-categories reveal"></div>
+    <div id="galleryGrid" class="gallery-grid">
+      <div class="empty-articles">Loading gallery…</div>
     </div>
     <div class="reveal" style="text-align:center;margin-top:48px">
       <p style="margin-bottom:20px">Interested in attending an Orbit AI event?</p>
@@ -61,6 +51,59 @@
 <footer>
    <p>&copy; 2025 Orbit AI. All rights reserved. &nbsp;|&nbsp; <a href="contact.html">Contact</a> &nbsp;|&nbsp; <a href="solutions.html">Solutions</a></p>
 </footer>
+
+<script>
+  async function loadGallery() {
+    const grid = document.getElementById('galleryGrid');
+    if (!grid) return;
+
+    const host = window.location.hostname;
+    const apiBase = (window.location.protocol === 'file:'
+      || host === '127.0.0.1'
+      || host === 'localhost'
+      || (window.location.port && window.location.port !== '4000'))
+      ? `http://${host}:4000`
+      : '';
+
+    try {
+      const res = await fetch(`${apiBase}/api/galleries`);
+      if (!res.ok) throw new Error('Failed to load gallery');
+      const items = await res.json();
+      if (!Array.isArray(items) || !items.length) {
+        grid.innerHTML = '<div class="empty-articles">No gallery items found.</div>';
+        return;
+      }
+
+      const categories = [...new Set(items
+        .map(item => (item.category || 'General').trim())
+        .filter(Boolean)
+      )];
+
+      const categoriesEl = document.getElementById('galleryCategories');
+      if (categoriesEl) {
+        categoriesEl.innerHTML = categories.map(category => `
+          <span class="gallery-category-pill">${category}</span>
+        `).join('');
+      }
+
+      grid.innerHTML = items.map(item => {
+        const imageUrl = item.url || item.thumb || 'https://picsum.photos/seed/gallery/600/450';
+        const label = item.title || item.category || 'Orbit AI Gallery';
+        return `
+          <div class="gallery-item">
+            <img src="${imageUrl}" alt="${label}" loading="lazy" />
+            <div class="overlay"><span>${label}</span></div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-articles">Unable to load gallery: ${err.message}</div>`;
+      console.error('Gallery load error:', err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadGallery);
+</script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -38,8 +38,7 @@
       <p>Stay ahead with expert perspectives on enterprise AI, digital transformation, and the future of work.</p>
     </div>
     <div id="articlesGrid" class="cards-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
-      <!-- Articles will be loaded here from /api/articles -->
-      <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted);">Loading articles…</div>
+      <div class="empty-articles">Loading articles…</div>
     </div>
 
     <div class="reveal" style="text-align:center;margin-top:52px">
@@ -56,6 +55,55 @@
 <footer>
   <p>&copy; 2025 Orbit AI. All rights reserved. &nbsp;|&nbsp; <a href="contact.html">Contact</a> &nbsp;|&nbsp; <a href="solutions.html">Solutions</a></p>
 </footer>
+<script>
+  async function loadArticles() {
+    const grid = document.getElementById('articlesGrid');
+    if (!grid) return;
+
+    const host = window.location.hostname;
+    const apiBase = (window.location.protocol === 'file:'
+      || host === '127.0.0.1'
+      || host === 'localhost'
+      || (window.location.port && window.location.port !== '4000'))
+      ? `http://${host}:4000`
+      : '';
+
+    try {
+      const res = await fetch(`${apiBase}/api/articles`);
+      if (!res.ok) throw new Error('Failed to load articles');
+      const articles = await res.json();
+      if (!Array.isArray(articles) || !articles.length) {
+        grid.innerHTML = '<div class="empty-articles">No articles found.</div>';
+        return;
+      }
+
+      grid.innerHTML = articles.map(article => {
+        const image = (article.images && article.images[0]) || 'https://picsum.photos/seed/article/600/300';
+        const tag = article.tag || article.category || 'Insight';
+        const date = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recent';
+        const summary = article.summary || article.body || 'Read the latest insight from Orbit AI.';
+        const articleUrl = `article-detail.html?id=${encodeURIComponent(article.id)}`;
+
+        return `
+          <div class="article-card">
+            <img class="article-img" src="${image}" alt="${article.title || 'Article'}" loading="lazy" />
+            <div class="article-body">
+              <div class="article-meta"><span class="article-tag">${tag}</span><span class="article-date">${date}</span></div>
+              <h3>${article.title || 'Untitled article'}</h3>
+              <p>${summary}</p>
+              <a href="${articleUrl}" class="btn btn-ghost" style="font-size:0.86rem;padding:9px 20px">Read More</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-articles">Unable to load articles. ${err.message}</div>`;
+      console.error('Articles page error:', err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadArticles);
+</script>
 <script src="js/main.js"></script>
 </body>
 </html>
