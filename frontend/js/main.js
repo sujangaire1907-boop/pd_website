@@ -65,6 +65,16 @@ document.querySelectorAll(
   cardObs.observe(el);
 });
 
+function observeDynamicCards(container) {
+  if (!container) return;
+  container.querySelectorAll('.card.reveal').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(28px)';
+    el.style.transition = 'opacity 0.55s ease, transform 0.55s cubic-bezier(.22,.61,.36,1)';
+    cardObs.observe(el);
+  });
+}
+
 // ===== ANIMATED COUNTER =====
 function animateCounter(el, target, duration = 1800) {
   let start = null;
@@ -196,6 +206,150 @@ if (contactForm) {
     }
   });
 }
+
+function getApiBase() {
+  return (window.location.protocol === 'file:'
+    || window.location.hostname === '127.0.0.1'
+    || window.location.hostname === 'localhost'
+    || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, (char) => {
+    return ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char];
+  });
+}
+
+function parseEventDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (!Number.isNaN(date.getTime())) return date;
+  const parts = String(value).trim().split(/[-\/]/).map((p) => p.trim());
+  if (parts.length >= 3) {
+    const [year, month, day] = parts;
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  }
+  return null;
+}
+
+function normalizeLocalDate(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function eventPlaceholder(message) {
+  return `<div class="card reveal" style="opacity:.75"><div class="ev-card"><div class="ev-body"><p style="margin:0; color: var(--text-light);">${escapeHtml(message)}</p></div></div></div>`;
+}
+
+function getModeBadge(mode) {
+  const normalized = String(mode || '').toLowerCase();
+  if (normalized.includes('webinar')) return 'bp';
+  if (normalized.includes('workshop')) return 'bg-badge';
+  if (normalized.includes('in person') || normalized.includes('in-person')) return 'bc';
+  return 'ba';
+}
+
+function buildEventCard(event, isPast) {
+  const date = parseEventDate(event.eventDate);
+  const month = date ? date.toLocaleString('en-US', { month: 'short' }) : 'TBA';
+  const day = date ? String(date.getDate()).padStart(2, '0') : '--';
+  const year = date ? date.getFullYear() : '2025';
+  const locationText = event.location ? escapeHtml(event.location) : 'Online';
+  const timeText = event.startTime ? escapeHtml(`${event.startTime}${event.endTime ? ' – ' + event.endTime : ''}`) : '';
+  const mode = event.mode ? escapeHtml(event.mode) : '';
+  const featured = event.featured ? `<span class="badge ba">Featured</span>` : '';
+  const statusLabel = isPast ? `<span class="badge badge-muted">${escapeHtml(event.status || 'Completed')}</span>` : '';
+  const metaItems = [];
+
+  if (locationText) metaItems.push(`<span>${locationText}</span>`);
+  if (timeText) metaItems.push(`<span>${timeText}</span>`);
+
+  return `
+    <div class="card reveal">
+      <div class="ev-card">
+        <div class="ev-date">
+          <div class="mo">${month}</div>
+          <div class="dy">${day}</div>
+          <div class="yr">${year}</div>
+        </div>
+        <div class="ev-body">
+          <div class="event-card-header">
+            <h3>${escapeHtml(event.title || 'Untitled Event')}</h3>
+            ${mode ? `<span class="badge ${getModeBadge(mode)}">${mode}</span>` : ''}
+            ${featured}
+            ${statusLabel}
+          </div>
+          <div class="ev-meta">
+            ${metaItems.join('')}
+          </div>
+          <p>${escapeHtml(event.description || 'Details coming soon.')}</p>
+          ${!isPast ? `<div class="event-cta"><a href="contact.html" class="btn btn-primary btn-sm">Register Now</a></div>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+async function fetchEvents() {
+  const upcomingContainer = document.getElementById('upcomingEvents');
+  const pastContainer = document.getElementById('pastEvents');
+  const loading = document.getElementById('eventsLoading');
+  const error = document.getElementById('eventsError');
+  if (!upcomingContainer || !pastContainer) return;
+
+  try {
+    const res = await fetch(`${getApiBase()}/api/events`);
+    if (!res.ok) throw new Error('Unable to load events.');
+    const items = await res.json();
+    const now = normalizeLocalDate(new Date());
+    const upcoming = [];
+    const past = [];
+
+    (Array.isArray(items) ? items : []).forEach((event) => {
+      const date = parseEventDate(event.eventDate);
+      const completed = String(event.status || '').toLowerCase() === 'completed';
+      const eventLocalDate = date instanceof Date && !Number.isNaN(date.getTime()) ? normalizeLocalDate(date) : null;
+      const isPast = completed || (eventLocalDate && eventLocalDate < now);
+      if (isPast) past.push(event); else upcoming.push(event);
+    });
+
+    const sortByDate = (a, b, reverse = false) => {
+      const da = parseEventDate(a.eventDate);
+      const db = parseEventDate(b.eventDate);
+      const aTime = da instanceof Date && !Number.isNaN(da.getTime()) ? da.getTime() : 0;
+      const bTime = db instanceof Date && !Number.isNaN(db.getTime()) ? db.getTime() : 0;
+      return reverse ? bTime - aTime : aTime - bTime;
+    };
+
+    upcoming.sort((a, b) => sortByDate(a, b));
+    past.sort((a, b) => sortByDate(a, b, true));
+
+    upcomingContainer.innerHTML = upcoming.length
+      ? upcoming.map((event) => buildEventCard(event, false)).join('')
+      : eventPlaceholder('No upcoming events are available yet.');
+
+    pastContainer.innerHTML = past.length
+      ? past.map((event) => buildEventCard(event, true)).join('')
+      : eventPlaceholder('No past events are available yet.');
+
+    observeDynamicCards(upcomingContainer);
+    observeDynamicCards(pastContainer);
+  } catch (err) {
+    if (error) {
+      error.textContent = err.message || 'Unable to load event data.';
+      error.style.display = 'block';
+    }
+  } finally {
+    if (loading) loading.style.display = 'none';
+  }
+}
+
+const eventsPageSections = document.getElementById('upcomingEvents');
+if (eventsPageSections) fetchEvents();
 
 // ===== ADMIN LOGIN =====
 const loginForm       = document.getElementById('loginForm');
