@@ -100,6 +100,60 @@
 
   document.addEventListener('DOMContentLoaded', loadGallery);
 </script>
+
+<!-- FLOATING AI ASSISTANT -->
+<div id="aiAssistantWidget" class="ai-assistant-widget">
+  <!-- Floating Button -->
+  <button id="aiAssistantBtn" class="ai-assistant-btn" aria-label="Open AI Assistant">
+    <svg class="ai-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/>
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+      <circle cx="12" cy="12" r="9"/>
+    </svg>
+    <span class="ai-pulse"></span>
+  </button>
+
+  <!-- Chat Modal -->
+  <div id="aiChatModal" class="ai-chat-modal">
+    <div class="ai-chat-header">
+      <div class="ai-chat-title">
+        <h3>Orbit AI Assistant</h3>
+        <p>Ask me anything about our solutions</p>
+      </div>
+      <button id="aiCloseBtn" class="ai-close-btn" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="ai-chat-messages" id="aiChatMessages">
+      <div class="ai-message ai-bot-message">
+        <div class="ai-message-content">
+          👋 Hi! I'm your Orbit AI Assistant. How can I help you today?
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat-input-container">
+      <input 
+        type="text" 
+        id="aiChatInput" 
+        class="ai-chat-input" 
+        placeholder="Type your question..."
+        aria-label="Message input"
+      >
+      <button id="aiSendBtn" class="ai-send-btn" aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="js/main.js"></script>
 </body>
 </html>

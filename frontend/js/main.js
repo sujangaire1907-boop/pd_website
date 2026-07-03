@@ -450,3 +450,168 @@ window.handleSubscribe = function() {
     setTimeout(() => email.style.borderColor = '', 1500);
   }
 };
+
+// ===== FLOATING AI ASSISTANT =====
+(function initAIAssistant() {
+  const btn = document.getElementById('aiAssistantBtn');
+  const modal = document.getElementById('aiChatModal');
+  const closeBtn = document.getElementById('aiCloseBtn');
+  const chatInput = document.getElementById('aiChatInput');
+  const sendBtn = document.getElementById('aiSendBtn');
+  const messagesContainer = document.getElementById('aiChatMessages');
+
+  if (!btn || !modal || !messagesContainer) return;
+
+  // AI Response Database
+  const aiResponses = {
+    'solutions|product': [
+      'Our core solutions include AI Virtual Assistants, Prototyping Solutions, and Digital Employee Experience platforms. Each is designed to transform how your organization operates.',
+      'We offer three main solutions: 1) AI Virtual Assistant - handles 24/7 customer queries, 2) Prototyping Solutions - accelerates product development, 3) Digital Employee Experience - streamlines workplace operations.'
+    ],
+    'pricing|cost|price': [
+      'For pricing details, please contact our sales team through the Contact page. We offer customized enterprise solutions based on your needs.',
+      'Visit our Contact page to discuss pricing and get a personalized quote tailored to your organization.'
+    ],
+    'demo|trial|test': [
+      'Would you like to see a live demo? Please visit our Contact page and our team will arrange a personalized demonstration.',
+      'Schedule a demo by contacting us through the Contact page. Our sales team will walk you through our AI solutions.'
+    ],
+    'careers|jobs|hiring': [
+      'We\'re hiring across engineering, product, and customer success. Check out our open roles on the Careers page!',
+      'Interested in joining Orbit AI? Visit our Careers page to explore exciting opportunities with our global team.'
+    ],
+    'security|compliance|safe': [
+      'Security is our priority. We are SOC 2 Type II certified with end-to-end data encryption for enterprise-grade protection.',
+      'We maintain enterprise-level security standards including SOC 2 Type II certification and comprehensive data encryption.'
+    ],
+    'company|about|history': [
+      'Orbit AI is a global AI technology company founded in 2015. We serve 500+ enterprise clients across 40+ countries with 12M+ daily interactions.',
+      'Founded in 2015, Orbit AI revolutionizes how businesses operate through AI solutions. We have a global presence and serve Fortune 500 companies.'
+    ],
+    'case studies|success|results': [
+      'We have numerous success stories! Our case studies show how clients reduced costs by up to 72% and improved efficiency significantly. Visit our Case Studies page to learn more.',
+      'Check out our Case Studies page to see real-world results from our enterprise clients worldwide.'
+    ],
+    'team|contact|support': [
+      'You can reach us through our Contact page. Our team is available to help with any questions or support needs.',
+      'Have questions? Visit our Contact page or reach out to our support team. We\'re here to help!'
+    ],
+    'hello|hi|hey|greetings': [
+      '👋 Hi there! How can I assist you with Orbit AI today? Feel free to ask about our solutions, pricing, or anything else!',
+      'Hello! Welcome to Orbit AI. What would you like to know about our AI solutions?'
+    ],
+    'thank|thanks|appreciate': [
+      'You\'re welcome! Feel free to ask if you have any other questions.',
+      'Happy to help! Is there anything else you\'d like to know?'
+    ]
+  };
+
+  // Get AI Response
+  function getAIResponse(userMessage) {
+    const message = userMessage.toLowerCase().trim();
+    
+    for (const [keywords, responses] of Object.entries(aiResponses)) {
+      const keywordList = keywords.split('|');
+      if (keywordList.some(keyword => message.includes(keyword))) {
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+    }
+    
+    // Default response
+    return 'Great question! For more detailed information, please visit our Solutions page or contact us for personalized assistance.';
+  }
+
+  // Add message to chat
+  function addMessage(text, isUser) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-message ${isUser ? 'ai-user-message' : 'ai-bot-message'}`;
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'ai-message-content';
+    contentDiv.textContent = text;
+    
+    messageDiv.appendChild(contentDiv);
+    messagesContainer.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    setTimeout(() => {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 50);
+  }
+
+  // Show typing indicator
+  function showTypingIndicator() {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'ai-message ai-bot-message';
+    messageDiv.id = 'typingIndicator';
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'ai-message-content ai-typing-indicator';
+    contentDiv.innerHTML = '<div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div>';
+    
+    messageDiv.appendChild(contentDiv);
+    messagesContainer.appendChild(messageDiv);
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Remove typing indicator
+  function removeTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+  }
+
+  // Handle send message
+  function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // Add user message
+    addMessage(text, true);
+    chatInput.value = '';
+
+    // Show typing indicator
+    showTypingIndicator();
+
+    // Simulate AI response delay
+    setTimeout(() => {
+      removeTypingIndicator();
+      const response = getAIResponse(text);
+      addMessage(response, false);
+    }, 800 + Math.random() * 500);
+  }
+
+  // Event listeners
+  btn.addEventListener('click', () => {
+    modal.classList.toggle('open');
+    if (modal.classList.contains('open')) {
+      chatInput.focus();
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('open');
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.ai-assistant-widget')) {
+      modal.classList.remove('open');
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) {
+      modal.classList.remove('open');
+    }
+  });
+})();
