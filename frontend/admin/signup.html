@@ -294,7 +294,7 @@
         const apiBase = (window.location.protocol === 'file:'
           || window.location.hostname === '127.0.0.1'
           || window.location.hostname === 'localhost'
-          || (window.location.port && window.location.port !== '4000')) ? 'https://pd-website-mobq-pi.vercel.app' : '';
+          || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : '';
 
         fetch(`${apiBase}/api/auth/signup`, {
           method: 'POST',
