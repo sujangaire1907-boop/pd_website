@@ -292,6 +292,69 @@
       background: rgba(0,0,0,0.08);
     }
 
+    .btn-primary.is-loading,
+    .btn-secondary.is-loading {
+      opacity: 0.9;
+      pointer-events: none;
+      position: relative;
+      padding-right: 40px;
+    }
+
+    .btn-primary.is-loading::after,
+    .btn-secondary.is-loading::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-top-color: transparent;
+      border-radius: 50%;
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .btn-secondary.is-loading::after {
+      border-color: rgba(37,99,235,0.5);
+      border-top-color: transparent;
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: min(320px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: white;
+      font-size: 0.92rem;
+      font-weight: 600;
+      box-shadow: 0 16px 36px rgba(2,6,23,0.2);
+      background: #2563eb;
+      animation: toastIn 0.2s ease forwards;
+    }
+
+    .toast.success { background: #047857; }
+    .toast.error { background: #b91c1c; }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     /* event list */
     .event-list {
       display: grid;
@@ -602,6 +665,8 @@
   </main>
 
   <!-- ===== FOOTER ===== -->
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
   <footer class="footer">
     &copy; 2025 <a href="#">Orbit AI</a> · All rights reserved · 
     <a href="#">Privacy</a> · <a href="#">Terms</a>
@@ -638,6 +703,36 @@
       });
 
       // ----- Event functions -----
+      function showToast(message, type = 'info', duration = 3200) {
+        const stack = document.getElementById('toastStack');
+        if (!stack) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        stack.appendChild(toast);
+        window.setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(8px)';
+        }, duration);
+        window.setTimeout(() => toast.remove(), duration + 220);
+      }
+
+      function setButtonLoading(button, text) {
+        if (!button) return;
+        button.dataset.originalText = button.dataset.originalText || button.textContent;
+        button.disabled = true;
+        button.classList.add('is-loading');
+        button.textContent = text;
+      }
+
+      function clearButtonLoading(button) {
+        if (!button) return;
+        button.disabled = false;
+        button.classList.remove('is-loading');
+        const originalText = button.dataset.originalText || button.textContent;
+        button.textContent = originalText;
+      }
+
       async function renderEvents() {
         const list = document.getElementById('eventList');
         list.innerHTML = `<div class="empty-events">Loading events…</div>`;
@@ -714,17 +809,19 @@
         if (action === 'delete') {
           if (!confirm('Delete this event? This cannot be undone.')) return;
           try {
+            setButtonLoading(btn, 'Deleting…');
             showSaving('Deleting event, please wait...');
             const res = await fetch(`${apiBase}/api/events/${id}`, { method: 'DELETE' });
             if (!res.ok) throw new Error('Delete failed');
             await renderEvents();
-            alert('Event deleted');
-          } catch (err) { console.error(err); alert('Unable to delete event.'); }
-          finally { hideSaving(); }
+            showToast('Event deleted successfully.', 'success');
+          } catch (err) { console.error(err); showToast('Unable to delete event.', 'error'); }
+          finally { hideSaving(); clearButtonLoading(btn); }
         }
 
         if (action === 'toggle') {
           try {
+            setButtonLoading(btn, 'Updating…');
             showSaving('Updating status, please wait...');
             const ev = (window.__events || []).find(x => x.id === id);
             if (!ev) throw new Error('Event not found');
@@ -732,8 +829,9 @@
             const res = await fetch(`${apiBase}/api/events/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ title: ev.title, eventDate: ev.eventDate || ev.date || ev.createdAt, location: ev.location || '', startTime: ev.startTime || ev.time || '', endTime: ev.endTime || '', mode: ev.mode || 'In Person', featured: !!ev.featured, description: ev.description || '', status: newStatus }) });
             if (!res.ok) throw new Error('Toggle failed');
             await renderEvents();
-          } catch (err) { console.error(err); alert('Unable to toggle status.'); }
-          finally { hideSaving(); }
+            showToast(`Event ${newStatus.toLowerCase() === 'published' ? 'published' : 'moved to draft'}.`, 'success');
+          } catch (err) { console.error(err); showToast('Unable to toggle status.', 'error'); }
+          finally { hideSaving(); clearButtonLoading(btn); }
         }
 
         if (action === 'edit') {
@@ -777,6 +875,7 @@
 
           document.getElementById('editCancel').addEventListener('click', () => modal.remove());
           document.getElementById('editSave').addEventListener('click', async () => {
+            const saveBtn = document.getElementById('editSave');
             const title = document.getElementById('editEvTitle').value.trim();
             const date = document.getElementById('editEvDate').value;
             const time = document.getElementById('editEvTime').value;
@@ -787,6 +886,7 @@
             if (!title || !date) { alert('Title and date required'); return; }
 
             try {
+              setButtonLoading(saveBtn, 'Saving…');
               showSaving('Saving, please wait...');
               const apiBase = (window.location.protocol === 'file:'
                 || window.location.hostname === '127.0.0.1'
@@ -814,9 +914,9 @@
               if (!res.ok) { const t = await res.text(); console.error('Save failed', t); throw new Error('Save failed'); }
               modal.remove();
               await renderEvents();
-              alert('Event updated');
-            } catch (err) { console.error(err); alert('Unable to update event.'); }
-            finally { hideSaving(); }
+              showToast('Event updated successfully.', 'success');
+            } catch (err) { console.error(err); showToast('Unable to update event.', 'error'); }
+            finally { hideSaving(); clearButtonLoading(saveBtn); }
           });
         }
 
@@ -881,8 +981,10 @@
           || window.location.hostname === '127.0.0.1'
           || window.location.hostname === 'localhost'
           || (window.location.port && window.location.port !== '4000')) ? 'http://localhost:4000' : 'https://pd-website-mobq-pi.vercel.app';
+        const submitButton = form.querySelector('button[type="submit"]');
 
         try {
+          setButtonLoading(submitButton, 'Saving…');
           showSaving('Saving, please wait...');
           let imageUrl = null;
 
@@ -918,12 +1020,13 @@
 
           form.reset();
           await renderEvents();
-          alert('Event saved.');
+          showToast('Event saved successfully.', 'success');
         } catch (err) {
           console.error('Event create failed', err);
-          alert('Unable to save event. Check console.');
+          showToast('Unable to save event.', 'error');
         } finally {
           hideSaving();
+          clearButtonLoading(submitButton);
         }
       });
 

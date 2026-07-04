@@ -508,7 +508,142 @@
       opacity: 0.4;
       pointer-events: none;
     }
+
+    body.auth-unauthenticated .dashboard-wrap,
+    body.auth-unauthenticated .navbar,
+    body.auth-unauthenticated .nav-actions {
+      display: none !important;
+    }
+
+    .auth-warning {
+      display: none;
+      max-width: 840px;
+      margin: 24px auto;
+      padding: 22px 24px;
+      border-radius: 18px;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .auth-warning a {
+      color: #b91c1c;
+      text-decoration: underline;
+    }
+
+    .feedback-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 260;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 16px;
+      pointer-events: none;
+    }
+
+    .feedback-layer.show {
+      display: flex;
+    }
+
+    .feedback-panel {
+      width: min(420px, 100%);
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255,255,255,0.65);
+      border-radius: 24px;
+      padding: 14px 16px;
+      box-shadow: 0 20px 50px rgba(2, 6, 23, 0.2);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      pointer-events: auto;
+    }
+
+    .feedback-panel .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #1f2937;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .feedback-panel .progress-track {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .feedback-panel .progress-bar {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2563eb, #8b5cf6);
+      animation: feedbackPulse 1.15s linear infinite;
+      transform: translateX(-100%);
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 280;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: min(320px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 16px;
+      color: white;
+      font-size: 0.92rem;
+      font-weight: 600;
+      box-shadow: 0 16px 40px rgba(2, 6, 23, 0.2);
+      background: #1d4ed8;
+      animation: toastIn 0.2s ease forwards;
+    }
+
+    .toast.success {
+      background: #047857;
+    }
+
+    .toast.error {
+      background: #b91c1c;
+    }
+
+    .toast.info {
+      background: #1d4ed8;
+    }
+
+    @keyframes feedbackPulse {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(100%); }
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('orbitai_token');
+        if (!token || !token.trim()) {
+          window.location.replace('login.html');
+        }
+      } catch (err) {
+        window.location.replace('login.html');
+      }
+    })();
+  </script>
 </head>
 <body>
   <!-- ===== HEADER / NAVBAR ===== -->
@@ -530,6 +665,13 @@
       </button>
     </div>
   </header>
+
+  <div id="authMessage" class="auth-warning">
+    You are not authenticated. Please <a href="login.html">sign in</a> to access the admin dashboard.
+  </div>
+
+  <div id="feedbackLayer" class="feedback-layer" aria-live="polite" aria-hidden="true"></div>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="dashboard-wrap">
@@ -650,6 +792,25 @@
         return 'https://pd-website-mobq-pi.vercel.app';
       }
 
+      const dashboardWrap = document.querySelector('.dashboard-wrap');
+      const authMessage = document.getElementById('authMessage');
+      const navLinksElement = document.getElementById('navLinks');
+      const logoutBtnElement = document.getElementById('logoutBtn');
+
+      function requireAuth() {
+        const token = localStorage.getItem('orbitai_token');
+        if (!token || !token.trim()) {
+          document.body.classList.add('auth-unauthenticated');
+          if (authMessage) authMessage.style.display = 'block';
+          return false;
+        }
+        return true;
+      }
+
+      if (!requireAuth()) {
+        return;
+      }
+
       // ----- state -----
       let inquiries = [];
       let currentPage = 1;
@@ -666,6 +827,45 @@
       const nextBtn = document.getElementById('nextPageBtn');
 
       pageSizeSelect.value = pageSize;
+
+      function showToast(message, type = 'info', duration = 3200) {
+        const stack = document.getElementById('toastStack');
+        if (!stack) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        stack.appendChild(toast);
+        window.setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+        }, duration);
+        window.setTimeout(() => toast.remove(), duration + 220);
+      }
+
+      function showBusy(message = 'Working...') {
+        const layer = document.getElementById('feedbackLayer');
+        if (!layer) return;
+        layer.innerHTML = `
+          <div class="feedback-panel" role="status" aria-live="polite">
+            <div class="progress-label">
+              <span>${escapeHtml(message)}</span>
+              <span>please wait</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar"></div>
+            </div>
+          </div>`;
+        layer.classList.add('show');
+        layer.setAttribute('aria-hidden', 'false');
+      }
+
+      function hideBusy() {
+        const layer = document.getElementById('feedbackLayer');
+        if (!layer) return;
+        layer.classList.remove('show');
+        layer.innerHTML = '';
+        layer.setAttribute('aria-hidden', 'true');
+      }
 
       // ----- render -----
       function renderPage() {
@@ -717,6 +917,7 @@
       // ----- fetch data -----
       async function fetchInquiries() {
         const apiBase = getApiBase();
+        showBusy('Loading inquiries…');
         try {
           const res = await fetch(`${apiBase}/api/inquiries`);
           if (!res.ok) throw new Error(res.statusText || 'Failed to load');
@@ -725,9 +926,13 @@
           inquiries.sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0));
           currentPage = 1;
           renderPage();
+          showToast('Inquiries refreshed', 'success', 2400);
         } catch (err) {
           console.error('Fetch error:', err);
           tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Unable to load inquiries.</td></tr>`;
+          showToast('Unable to load inquiries.', 'error', 3200);
+        } finally {
+          hideBusy();
         }
       }
 
@@ -743,6 +948,7 @@
           const item = inquiries.find(x => x.id === id);
           if (!item) return;
           const newStatus = (String(item.status || '').toLowerCase() === 'resolved') ? 'unread' : 'resolved';
+          showBusy('Updating inquiry…');
           try {
             const res = await fetch(`${apiBase}/api/inquiries/${id}`, {
               method: 'PATCH',
@@ -752,8 +958,11 @@
             if (!res.ok) throw new Error(res.statusText || 'Update failed');
             item.status = newStatus;
             renderPage();
+            showToast(`Inquiry marked as ${newStatus}.`, 'success', 2400);
           } catch (err) {
-            alert('Error updating status: ' + (err.message || ''));
+            showToast('Unable to update inquiry.', 'error', 3200);
+          } finally {
+            hideBusy();
           }
         }
 
@@ -787,8 +996,12 @@
         document.getElementById('replySend').addEventListener('click', async () => {
           const subject = document.getElementById('replySubject').value.trim();
           const message = document.getElementById('replyMessage').value.trim();
-          if (!subject || !message) { alert('Please enter subject and message'); return; }
+          if (!subject || !message) {
+            showToast('Please enter both a subject and message.', 'error', 3200);
+            return;
+          }
           const apiBase = getApiBase();
+          showBusy('Sending reply…');
           try {
             const res = await fetch(`${apiBase}/api/inquiries/${id}`, {
               method: 'PATCH',
@@ -796,10 +1009,12 @@
               body: JSON.stringify({ subject, message })
             });
             if (!res.ok) throw new Error(res.statusText || 'Send failed');
-            alert('Reply sent');
+            showToast('Reply sent successfully.', 'success', 2400);
             overlay.remove();
           } catch (err) {
-            alert('Error sending reply: ' + (err.message || ''));
+            showToast('Unable to send reply.', 'error', 3200);
+          } finally {
+            hideBusy();
           }
         });
       }

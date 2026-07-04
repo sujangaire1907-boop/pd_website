@@ -248,6 +248,62 @@
       transform: scale(0.98);
     }
 
+    .btn-primary.is-loading {
+      opacity: 0.9;
+      pointer-events: none;
+      position: relative;
+      padding-right: 40px;
+    }
+
+    .btn-primary.is-loading::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-top-color: transparent;
+      border-radius: 50%;
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: min(320px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: white;
+      font-size: 0.92rem;
+      font-weight: 600;
+      box-shadow: 0 16px 36px rgba(2,6,23,0.2);
+      background: #2563eb;
+      animation: toastIn 0.2s ease forwards;
+    }
+
+    .toast.success { background: #047857; }
+    .toast.error { background: #b91c1c; }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     /* gallery grid */
     .gallery-grid {
       display: grid;
@@ -470,6 +526,8 @@
   </main>
 
   <!-- ===== FOOTER ===== -->
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
   <footer class="footer">
     &copy; 2025 <a href="#">Orbit AI</a> · All rights reserved · 
     <a href="#">Privacy</a> · <a href="#">Terms</a>
@@ -506,6 +564,36 @@
       });
 
       // ----- Gallery functions -----
+      function showToast(message, type = 'info', duration = 3200) {
+        const stack = document.getElementById('toastStack');
+        if (!stack) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        stack.appendChild(toast);
+        window.setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(8px)';
+        }, duration);
+        window.setTimeout(() => toast.remove(), duration + 220);
+      }
+
+      function setButtonLoading(button, text) {
+        if (!button) return;
+        button.dataset.originalText = button.dataset.originalText || button.textContent;
+        button.disabled = true;
+        button.classList.add('is-loading');
+        button.textContent = text;
+      }
+
+      function clearButtonLoading(button) {
+        if (!button) return;
+        button.disabled = false;
+        button.classList.remove('is-loading');
+        const originalText = button.dataset.originalText || button.textContent;
+        button.textContent = originalText;
+      }
+
       async function renderGallery() {
         const grid = document.getElementById('galleryGrid');
         grid.innerHTML = `<div class="empty-gallery">Loading gallery…</div>`;
@@ -534,10 +622,11 @@
             </div>
           `).join('');
           // attach delete handlers
-          document.querySelectorAll('.icon-del').forEach(b => b.addEventListener('click', () => deleteItem(b.getAttribute('data-id'))));
+          document.querySelectorAll('.icon-del').forEach(b => b.addEventListener('click', (event) => deleteItem(b.getAttribute('data-id'), event.currentTarget)));
         } catch (err) {
           console.error('Render gallery failed', err);
           grid.innerHTML = `<div class="empty-gallery">Unable to load gallery.</div>`;
+          showToast('Unable to load gallery.', 'error');
         }
       }
 
@@ -555,9 +644,12 @@
         const title = document.getElementById('imgTitle').value.trim();
         const category = document.getElementById('imgCategory').value;
         const file = document.getElementById('imgFile').files[0];
+        const submitButton = form.querySelector('button[type="submit"]');
 
         if (!title) { alert('Please enter an image title.'); return; }
         if (!file) { alert('Please choose an image file.'); return; }
+
+        setButtonLoading(submitButton, 'Uploading…');
 
         // read file as data URL and send to backend upload endpoint
         const reader = new FileReader();
@@ -586,19 +678,22 @@
 
             form.reset();
             await renderGallery();
-            alert('Image uploaded and saved.');
+            showToast('Image uploaded successfully.', 'success');
           } catch (err) {
             console.error('Upload flow failed', err);
-            alert('Upload failed. Check console for details.');
+            showToast('Upload failed. Please try again.', 'error');
+          } finally {
+            clearButtonLoading(submitButton);
           }
         };
         reader.readAsDataURL(file);
       });
 
         // delete gallery item
-        async function deleteItem(id) {
+        async function deleteItem(id, button) {
           if (!confirm('Delete this gallery item?')) return;
           try {
+            setButtonLoading(button, 'Deleting…');
             const apiBase = (window.location.protocol === 'file:'
               || window.location.hostname === '127.0.0.1'
               || window.location.hostname === 'localhost'
@@ -606,10 +701,12 @@
             const res = await fetch(`${apiBase}/api/galleries/${encodeURIComponent(id)}`, { method: 'DELETE' });
             if (!res.ok) { const t = await res.text(); console.error('Delete failed', t); throw new Error('Delete failed'); }
             await renderGallery();
-            alert('Gallery item deleted.');
+            showToast('Gallery item deleted.', 'success');
           } catch (err) {
             console.error('Delete gallery failed', err);
-            alert('Unable to delete gallery item.');
+            showToast('Unable to delete gallery item.', 'error');
+          } finally {
+            clearButtonLoading(button);
           }
         }
 
